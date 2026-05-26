@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIVIA — Property Management Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=DM+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #033A6D;
+  --navy2:  #022850;
+  --ink:    #0D1117;
+  --paper:  #F5F3EE;
+  --cream:  #FAF8F3;
+  --gold:   #B8972A;
+  --gold2:  #E2C96A;
+  --slate:  #49637E;
+  --mist:   #E4EBF3;
+  --rule:   rgba(3,58,109,0.1);
+  --green:  #16A34A;
+  --red:    #DC2626;
+  --amber:  #D97706;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Geist',sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden;}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  background:rgba(245,243,238,0.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--rule);
+}
+.brand{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--navy);letter-spacing:.5px;cursor:pointer;}
+.brand span{color:var(--gold);}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{
+  padding:7px 16px;border-radius:6px;border:none;cursor:pointer;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:500;
+  background:none;color:var(--slate);transition:all .2s;
+}
+.nav-tab:hover{color:var(--navy);background:var(--mist);}
+.nav-tab.active{background:var(--navy);color:white;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-sm{
+  padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all .2s;font-family:'Geist',sans-serif;
+}
+.btn-gold{background:var(--gold);color:white;}
+.btn-gold:hover{background:#9a7d24;}
+.btn-navy{background:var(--navy);color:white;}
+.btn-navy:hover{background:var(--navy2);}
+.btn-outline{background:none;border:1.5px solid var(--rule);color:var(--slate);}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--navy);border-radius:2px;transition:.3s;}
+
+/* ═══ PAGES ═══ */
+.page{display:none;padding-top:64px;min-height:100vh;}
+.page.active{display:block;}
+
+/* ═══ HERO ═══ */
+.hero{
+  min-height:calc(100vh - 64px);
+  display:grid;grid-template-columns:1fr 1fr;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 50%,var(--navy) 50%);
+  pointer-events:none;
+}
+.hero-left{
+  padding:80px 60px 80px 80px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;z-index:1;
+}
+.eyebrow{
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--gold);}
+h1{
+  font-family:'Fraunces',serif;
+  font-size:clamp(44px,5vw,68px);font-weight:600;line-height:1.08;
+  color:var(--navy);margin-bottom:22px;
+}
+h1 em{font-style:italic;color:var(--gold);}
+.hero-body{font-size:16px;color:var(--slate);line-height:1.8;max-width:440px;margin-bottom:36px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.hero-stats{
+  display:flex;gap:36px;margin-top:52px;padding-top:40px;
+  border-top:1px solid var(--rule);
+}
+.stat-n{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--navy);}
+.stat-l{font-size:11px;color:var(--slate);margin-top:3px;font-family:'DM Mono',monospace;letter-spacing:.5px;}
+
+.hero-right{
+  padding:80px 80px 80px 60px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;z-index:1;
+}
+/* switcher */
+.role-switch{display:flex;gap:4px;background:rgba(255,255,255,.08);border-radius:10px;padding:4px;margin-bottom:24px;}
+.role-btn{
+  flex:1;padding:10px;border:none;cursor:pointer;border-radius:8px;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.5);background:none;transition:all .2s;
+}
+.role-btn.active{background:rgba(255,255,255,.13);color:white;}
+.info-card{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:28px;display:none;
+}
+.info-card.active{display:block;}
+.card-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.card-h{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:white;line-height:1.2;margin-bottom:18px;}
+.card-li{display:flex;align-items:flex-start;gap:9px;margin-bottom:12px;font-size:13.5px;color:rgba(255,255,255,.7);}
+.card-li::before{content:'✓';color:var(--gold2);font-weight:700;flex-shrink:0;margin-top:1px;}
+.card-action{
+  display:block;margin-top:22px;background:var(--gold);color:white;
+  border:none;border-radius:8px;padding:13px;font-family:'Geist',sans-serif;
+  font-size:14px;font-weight:600;cursor:pointer;text-align:center;
+  text-decoration:none;transition:all .2s;width:100%;
+}
+.card-action:hover{background:#9a7d24;}
+
+/* ═══ LISTINGS PAGE ═══ */
+.listings-wrap{max-width:1200px;margin:0 auto;padding:48px 32px;}
+.page-header{margin-bottom:40px;}
+.page-header h2{font-family:'Fraunces',serif;font-size:40px;color:var(--navy);font-weight:600;}
+.page-header p{color:var(--slate);font-size:15px;margin-top:8px;}
+/* TurboTenant embed */
+.tt-embed-wrap{
+  background:white;border-radius:16px;border:1px solid var(--rule);
+  overflow:hidden;margin-bottom:40px;
+  box-shadow:0 4px 24px rgba(3,58,109,0.07);
+}
+.tt-embed-header{
+  padding:18px 24px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tt-embed-label{
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+/* Property cards */
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:32px;}
+.prop-card{
+  background:white;border:1px solid var(--rule);border-radius:14px;
+  overflow:hidden;transition:all .25s;cursor:pointer;
+}
+.prop-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(3,58,109,.1);border-color:var(--navy);}
+.prop-img{
+  height:170px;display:flex;align-items:center;justify-content:center;
+  font-size:48px;background:var(--mist);
+}
+.prop-body{padding:20px;}
+.prop-price{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--navy);}
+.prop-price span{font-size:13px;font-weight:400;color:var(--slate);}
+.prop-addr{font-size:13.5px;color:var(--slate);margin:6px 0 14px;line-height:1.4;}
+.prop-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.tag{
+  font-family:'DM Mono',monospace;font-size:10px;
+  padding:3px 8px;border-radius:4px;
+}
+.tag-green{background:#DCFCE7;color:#166534;}
+.tag-blue{background:#DBEAFE;color:#1E40AF;}
+.tag-amber{background:#FEF3C7;color:#92400E;}
+.tag-navy{background:var(--mist);color:var(--navy);}
+.prop-btn{
+  width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Geist',sans-serif;font-size:13px;font-weight:600;
+  background:var(--navy);color:white;transition:all .2s;
+}
+.prop-btn:hover{background:var(--navy2);}
+
+/* ═══ PROPERTY DETAIL / CLONE MODAL ═══ */
+.modal-bg{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(13,17,23,.8);backdrop-filter:blur(6px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:80px 20px 20px;overflow-y:auto;
+}
+.modal-bg.open{display:flex;}
+.modal-box{
+  background:white;border-radius:20px;width:100%;max-width:680px;
+  position:relative;animation:mIn .3s ease;
+  margin-bottom:40px;
+}
+@keyframes mIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  background:var(--mist);border:none;cursor:pointer;
+  width:30px;height:30px;border-radius:50%;
+  font-size:16px;color:var(--slate);display:flex;align-items:center;justify-content:center;
+}
+.modal-hero{background:var(--navy);padding:32px;border-radius:20px 20px 0 0;color:white;}
+.modal-hero .eyebrow{color:var(--gold2);}
+.modal-hero .eyebrow::before{background:var(--gold2);}
+.modal-hero h3{font-family:'Fraunces',serif;font-size:28px;font-weight:600;color:white;margin-bottom:6px;}
+.modal-hero p{font-size:14px;color:rgba(255,255,255,.55);}
+.modal-body{padding:32px;}
+/* Form */
+.f-section{margin-bottom:28px;}
+.f-section-title{
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--slate);letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--rule);
+}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.f-row.three{grid-template-columns:1fr 1fr 1fr;}
+.f-row.one{grid-template-columns:1fr;}
+.f-group{display:flex;flex-direction:column;gap:5px;}
+.f-label{font-size:12px;color:var(--slate);font-weight:500;letter-spacing:.3px;}
+.f-input{
+  padding:10px 12px;border:1.5px solid var(--rule);border-radius:8px;
+  font-family:'Geist',sans-serif;font-size:14px;color:var(--ink);
+  outline:none;transition:border-color .2s;background:white;
+}
+.f-input:focus{border-color:var(--navy);}
+.f-select{
+  padding:10px 12px;border:1.5px solid var(--rule);border-radius:8px;
+  font-family:'Geist',sans-serif;font-size:14px;color:var(--ink);
+  background:white;outline:none;cursor:pointer;
+}
+.f-note{font-size:11.5px;color:var(--slate);margin-top:4px;font-style:italic;}
+.clone-preview{
+  background:var(--cream);border:1.5px solid var(--rule);
+  border-radius:10px;padding:16px;margin-top:12px;
+}
+.clone-preview-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.clone-field{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--rule);font-size:13px;
+}
+.clone-field:last-child{border-bottom:none;}
+.clone-key{color:var(--slate);}
+.clone-val{color:var(--navy);font-weight:600;font-family:'DM Mono',monospace;font-size:12px;}
+.modal-footer{
+  padding:0 32px 32px;display:flex;gap:10px;
+}
+
+/* ═══ ID VERIFICATION FLOW ═══ */
+.id-steps{display:flex;gap:0;margin-bottom:24px;overflow:hidden;border-radius:10px;border:1px solid var(--rule);}
+.id-step{
+  flex:1;padding:12px;text-align:center;
+  font-size:12px;font-weight:500;color:var(--slate);
+  background:var(--cream);border-right:1px solid var(--rule);
+  position:relative;transition:all .3s;
+}
+.id-step:last-child{border-right:none;}
+.id-step.done{background:#DCFCE7;color:#166534;}
+.id-step.active{background:var(--navy);color:white;}
+.id-step-num{
+  display:block;font-family:'DM Mono',monospace;
+  font-size:16px;font-weight:500;margin-bottom:3px;
+}
+.id-upload-zone{
+  border:2px dashed var(--rule);border-radius:10px;
+  padding:32px;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--cream);
+}
+.id-upload-zone:hover{border-color:var(--navy);background:var(--mist);}
+.id-upload-zone input{display:none;}
+.upload-icon{font-size:32px;margin-bottom:10px;}
+.upload-label{font-size:14px;color:var(--slate);}
+.upload-sub{font-size:12px;color:#aaa;margin-top:4px;}
+.id-preview{
+  display:none;border-radius:10px;overflow:hidden;
+  border:1.5px solid var(--green);position:relative;
+  background:var(--cream);padding:16px;
+}
+.id-preview.show{display:flex;align-items:center;gap:14px;}
+.id-preview-icon{font-size:28px;}
+.id-preview-info{flex:1;}
+.id-preview-name{font-size:14px;font-weight:600;color:var(--navy);}
+.id-preview-size{font-size:12px;color:var(--slate);}
+.id-verified-badge{
+  display:none;background:#DCFCE7;border:1px solid #A7F3D0;
+  border-radius:8px;padding:10px 14px;
+  font-size:13px;color:#166534;font-weight:500;
+  align-items:center;gap:8px;margin-top:12px;
+}
+.id-verified-badge.show{display:flex;}
+
+/* ═══ LIVE TRACKING ═══ */
+.tracking-wrap{max-width:1100px;margin:0 auto;padding:48px 32px;}
+.track-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.track-card{
+  background:white;border:1px solid var(--rule);border-radius:12px;padding:20px;
+}
+.track-card-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.track-card-num{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--navy);line-height:1;}
+.track-card-sub{font-size:12px;color:var(--slate);margin-top:4px;}
+.track-card-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-top:8px;
+}
+.badge-green{background:#DCFCE7;color:#166534;}
+.badge-amber{background:#FEF3C7;color:#92400E;}
+.badge-red{background:#FEE2E2;color:#991B1B;}
+/* Listings table */
+.listings-table{background:white;border:1px solid var(--rule);border-radius:14px;overflow:hidden;}
+.table-header{
+  padding:18px 24px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.table-title{font-size:16px;font-weight:600;color:var(--navy);}
+.t-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{
+  background:var(--cream);font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--slate);padding:10px 20px;text-align:left;
+  border-bottom:1px solid var(--rule);white-space:nowrap;
+}
+td{padding:14px 20px;font-size:13.5px;border-bottom:1px solid #F5F5F5;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FAFBFD;}
+.status-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+}
+.pill-live{background:#DCFCE7;color:#166534;}
+.pill-pending{background:#FEF3C7;color:#92400E;}
+.pill-review{background:#DBEAFE;color:#1E40AF;}
+.pill-dot{width:6px;height:6px;border-radius:50%;}
+.pill-live .pill-dot{background:#16A34A;}
+.pill-pending .pill-dot{background:#D97706;}
+.pill-review .pill-dot{background:#2563EB;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;color:var(--slate);}
+.action-link{
+  font-size:12px;font-weight:600;color:var(--navy);
+  background:none;border:none;cursor:pointer;text-decoration:underline;
+}
+/* Activity feed */
+.activity-feed{
+  background:white;border:1px solid var(--rule);border-radius:14px;
+  overflow:hidden;margin-top:24px;
+}
+.feed-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:16px 24px;border-bottom:1px solid #F5F5F5;
+}
+.feed-item:last-child{border-bottom:none;}
+.feed-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;margin-top:1px;
+}
+.feed-text{flex:1;}
+.feed-title{font-size:13.5px;font-weight:500;color:var(--ink);}
+.feed-sub{font-size:12px;color:var(--slate);margin-top:2px;}
+.feed-time{font-family:'DM Mono',monospace;font-size:11px;color:#bbb;white-space:nowrap;}
+
+/* ═══ APPLY PAGE ═══ */
+.apply-wrap{max-width:760px;margin:0 auto;padding:48px 32px;}
+.apply-progress{
+  display:flex;gap:0;margin-bottom:40px;
+  background:white;border:1px solid var(--rule);border-radius:10px;
+  overflow:hidden;
+}
+.prog-step{
+  flex:1;padding:14px 12px;text-align:center;
+  font-size:12px;font-weight:500;color:var(--slate);
+  background:var(--cream);border-right:1px solid var(--rule);
+  transition:all .3s;cursor:pointer;
+}
+.prog-step:last-child{border-right:none;}
+.prog-step.done{background:#DCFCE7;color:#166534;}
+.prog-step.current{background:var(--navy);color:white;}
+.prog-step-num{
+  display:block;font-family:'Fraunces',serif;
+  font-size:22px;font-weight:700;margin-bottom:2px;
+}
+/* Apply steps */
+.apply-step{display:none;}
+.apply-step.active{display:block;}
+.step-card{background:white;border:1px solid var(--rule);border-radius:16px;padding:32px;margin-bottom:20px;}
+.step-card-title{font-family:'Fraunces',serif;font-size:24px;color:var(--navy);margin-bottom:6px;}
+.step-card-sub{font-size:14px;color:var(--slate);margin-bottom:24px;}
+/* Property autofill from listing */
+.prop-selector{
+  background:var(--cream);border:1.5px solid var(--rule);
+  border-radius:10px;margin-bottom:20px;overflow:hidden;
+}
+.prop-sel-header{
+  padding:14px 16px;font-size:13px;font-weight:600;color:var(--navy);
+  border-bottom:1px solid var(--rule);background:white;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.prop-sel-opt{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  cursor:pointer;transition:background .15s;
+}
+.prop-sel-opt:last-child{border-bottom:none;}
+.prop-sel-opt:hover{background:var(--mist);}
+.prop-sel-opt.selected{background:#EBF2FF;}
+.prop-radio{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .2s;
+}
+.prop-sel-opt.selected .prop-radio{border-color:var(--navy);}
+.prop-radio-inner{width:8px;height:8px;border-radius:50%;background:var(--navy);display:none;}
+.prop-sel-opt.selected .prop-radio-inner{display:block;}
+.prop-sel-info{flex:1;}
+.prop-sel-addr{font-size:13.5px;font-weight:500;color:var(--navy);}
+.prop-sel-price{font-size:12px;color:var(--slate);}
+/* Autofilled fields */
+.autofill-indicator{
+  display:flex;align-items:center;gap:6px;
+  font-size:11.5px;color:#166534;margin-top:4px;
+}
+.autofill-indicator::before{content:'⚡';font-size:11px;}
+/* payment methods */
+.pay-methods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.pay-method{
+  border:1.5px solid var(--rule);border-radius:8px;padding:12px 8px;
+  text-align:center;cursor:pointer;transition:all .2s;background:white;
+}
+.pay-method:hover{border-color:var(--navy);}
+.pay-method.selected{border-color:var(--navy);background:#EBF2FF;}
+.pay-icon{font-size:22px;margin-bottom:4px;}
+.pay-name{font-size:11px;font-weight:600;color:var(--navy);}
+/* Submit btn */
+.submit-full{
+  width:100%;padding:15px;border-radius:10px;border:none;
+  background:var(--navy);color:white;font-family:'Geist',sans-serif;
+  font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;
+  margin-top:8px;
+}
+.submit-full:hover{background:var(--navy2);transform:translateY(-1px);}
+
+/* ═══ FOOTER ═══ */
+footer{
+  background:var(--ink);padding:56px 80px 28px;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px;}
+.f-brand{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:white;margin-bottom:12px;}
+.f-brand span{color:var(--gold);}
+.f-tagline{font-size:13px;color:rgba(255,255,255,.4);line-height:1.8;max-width:260px;margin-bottom:20px;}
+.f-contact{font-size:13px;color:rgba(255,255,255,.45);line-height:2.2;}
+.f-contact a{color:rgba(255,255,255,.45);text-decoration:none;}
+.f-col-title{font-size:11px;font-weight:600;color:white;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.f-links{list-style:none;}
+.f-links li{margin-bottom:10px;}
+.f-links a{font-size:13.5px;color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s;}
+.f-links a:hover{color:var(--gold2);}
+.f-bottom{
+  padding-top:20px;border-top:1px solid rgba(255,255,255,.06);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.f-legal{font-family:'DM Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.2);}
+
+/* ═══ TOAST ═══ */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:9999;
+  background:var(--navy);color:white;
+  padding:13px 22px;border-radius:10px;font-size:13.5px;font-weight:500;
+  display:none;align-items:center;gap:9px;
+  box-shadow:0 8px 28px rgba(0,0,0,.25);animation:tIn .3s ease;
+}
+.toast.show{display:flex;}
+@keyframes tIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-tabs{display:none;}
+  .hamburger{display:flex;}
+  .mobile-menu{
+    display:none;position:fixed;top:64px;left:0;right:0;z-index:190;
+    background:var(--paper);border-bottom:1px solid var(--rule);
+    padding:12px 20px 20px;
+  }
+  .mobile-menu.open{display:block;}
+  .mobile-menu button{
+    display:block;width:100%;padding:13px 16px;text-align:left;
+    background:none;border:none;cursor:pointer;font-family:'Geist',sans-serif;
+    font-size:15px;color:var(--navy);border-bottom:1px solid var(--rule);
+  }
+  .mobile-menu button:last-child{border-bottom:none;}
+  .hero{grid-template-columns:1fr;min-height:auto;}
+  .hero-bg{background:none;}
+  .hero-right{background:var(--navy);}
+  .hero-left{padding:48px 24px;}
+  .hero-right{padding:48px 24px;}
+  .hero-stats{gap:20px;flex-wrap:wrap;}
+  .track-grid{grid-template-columns:1fr 1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px;}
+  .f-bottom{flex-direction:column;text-align:center;}
+  .pay-methods{grid-template-columns:repeat(4,1fr);}
+  footer{padding:48px 24px 24px;}
+  .listings-wrap,.tracking-wrap,.apply-wrap{padding:32px 16px;}
+  .prop-grid{grid-template-columns:1fr;}
+  .f-row{grid-template-columns:1fr;}
+  .f-row.three{grid-template-columns:1fr;}
+  th,td{padding:10px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="brand" onclick="showPage('home')">VIVIA<span>.</span></div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="showPage('home')">Home</button>
+    <button class="nav-tab" onclick="showPage('listings')">Listings</button>
+    <button class="nav-tab" onclick="showPage('apply')">Apply</button>
+    <button class="nav-tab" onclick="showPage('tracking')">Tracking</button>
+    <button class="nav-tab" onclick="showPage('landlord')">Landlords</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-sm btn-navy" onclick="showPage('apply')">Apply Now</button>
+    <button class="hamburger" id="burger" onclick="toggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button onclick="showPage('home');toggleMobile()">Home</button>
+  <button onclick="showPage('listings');toggleMobile()">Listings</button>
+  <button onclick="showPage('apply');toggleMobile()">Apply Now</button>
+  <button onclick="showPage('tracking');toggleMobile()">Live Tracking</button>
+  <button onclick="showPage('landlord');toggleMobile()">For Landlords</button>
+</div>
+
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-left">
+      <div class="eyebrow">Illinois & Georgia Markets</div>
+      <h1>Find your<br><em>perfect home</em><br>with VIVIA</h1>
+      <p class="hero-body">Premium residential property management connecting quality renters with exceptional homes — and helping landlords maximize returns with zero hassle.</p>
+      <div class="hero-btns">
+        <button class="btn-sm btn-navy" style="padding:13px 26px;font-size:14px;" onclick="showPage('listings')">Browse Listings</button>
+        <button class="btn-sm btn-gold" style="padding:13px 26px;font-size:14px;" onclick="showPage('apply')">Apply Now</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-n">28+</div><div class="stat-l">Leads / listing</div></div>
+        <div><div class="stat-n">48h</div><div class="stat-l">Time to market</div></div>
+        <div><div class="stat-n">40+</div><div class="stat-l">Listing platforms</div></div>
+        <div><div class="stat-n">4</div><div class="stat-l">Active markets</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="role-switch">
+        <button class="role-btn active" onclick="switchRole('renter',this)">I'm a Renter</button>
+        <button class="role-btn" onclick="switchRole('landlord',this)">I'm a Landlord</button>
+      </div>
+      <div class="info-card active" id="ic-renter">
+        <div class="card-tag">Renter Portal</div>
+        <div class="card-h">Find your home.<br>Apply today.</div>
+        <div class="card-li">Verified listings in IL & TX with full details</div>
+        <div class="card-li">Secure online application — no paper needed</div>
+        <div class="card-li">Credit, criminal & eviction screening — free process</div>
+        <div class="card-li">8 flexible payment methods for app fee & rent</div>
+        <button class="card-action" onclick="showPage('apply')">Start My Application →</button>
+      </div>
+      <div class="info-card" id="ic-landlord">
+        <div class="card-tag">Landlord Portal</div>
+        <div class="card-h">List once.<br>Reach thousands.</div>
+        <div class="card-li">One-click syndication to 40+ rental platforms</div>
+        <div class="card-li">Average 28 qualified leads per property</div>
+        <div class="card-li">Full tenant screening, leasing & rent collection</div>
+        <div class="card-li">Fully remote — manage from anywhere</div>
+        <button class="card-action" onclick="showPage('landlord')">List My Property →</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ LISTINGS PAGE ══════════════ -->
+<div class="page" id="page-listings">
+  <div class="listings-wrap">
+    <div class="page-header">
+      <h2>Active Listings</h2>
+      <p>All properties managed by VIVIA Rentals & Property Services · TurboTenant Inc</p>
+    </div>
+
+    <!-- TurboTenant Live Embed -->
+    <div class="tt-embed-wrap">
+      <div class="tt-embed-header">
+        <div class="tt-embed-label">
+          <span class="live-dot"></span>
+          Live TurboTenant Feed — VIVIA Portfolio
+        </div>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:#aaa;">rental.turbotenant.com</span>
+      </div>
+      <iframe
+        style="border:none;display:block;"
+        src="https://rental.turbotenant.com/embedpropertylist.html#/QmFzaWNVc2VyUHJvZmlsZToxMTA2NTAy"
+        height="600"
+        width="100%"
+        title="VIVIA Live Listings — TurboTenant"
+        loading="lazy">
+      </iframe>
+    </div>
+
+    <!-- Manual property cards -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="font-family:'Fraunces',serif;font-size:24px;color:var(--navy);">Featured Properties</h3>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--slate);">4 ACTIVE</span>
+    </div>
+    <div class="prop-grid" id="propGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ APPLY PAGE ══════════════ -->
+<div class="page" id="page-apply">
+  <div class="apply-wrap">
+    <div class="page-header">
+      <h2>Rental Application</h2>
+      <p>Secure online application · Takes about 10 minutes · $75 application fee</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="apply-progress" id="applyProg">
+      <div class="prog-step current" onclick="goApplyStep(1)"><span class="prog-step-num">1</span>Property</div>
+      <div class="prog-step" onclick="goApplyStep(2)"><span class="prog-step-num">2</span>Personal</div>
+      <div class="prog-step" onclick="goApplyStep(3)"><span class="prog-step-num">3</span>Verify ID</div>
+      <div class="prog-step" onclick="goApplyStep(4)"><span class="prog-step-num">4</span>Payment</div>
+      <div class="prog-step" onclick="goApplyStep(5)"><span class="prog-step-num">5</span>Review</div>
+    </div>
+
+    <!-- STEP 1: Property Selection + Clone -->
+    <div class="apply-step active" id="astep-1">
+      <div class="step-card">
+        <div class="step-card-title">Select a Property</div>
+        <div class="step-card-sub">Choose your desired property. Fields will auto-populate from our listing database.</div>
+        <div class="prop-selector" id="propSelector"></div>
+        <div id="propAutofillPreview" style="display:none;">
+          <div class="autofill-indicator">Address & pricing auto-filled from listing</div>
+          <div class="clone-preview" style="margin-top:10px;">
+            <div class="clone-preview-label">Cloned from Listing</div>
+            <div class="clone-field"><span class="clone-key">Property</span><span class="clone-val" id="cfAddr">—</span></div>
+            <div class="clone-field"><span class="clone-key">Monthly Rent</span><span class="clone-val" id="cfRent">—</span></div>
+            <div class="clone-field"><span class="clone-key">Deposit</span><span class="clone-val" id="cfDeposit">—</span></div>
+            <div class="clone-field"><span class="clone-key">Lease Term</span><span class="clone-val" id="cfLease">—</span></div>
+            <div class="clone-field"><span class="clone-key">App Fee</span><span class="clone-val">$75.00</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="submit-full" onclick="goApplyStep(2)">Continue →</button>
+    </div>
+
+    <!-- STEP 2: Personal Info -->
+    <div class="apply-step" id="astep-2">
+      <div class="step-card">
+        <div class="step-card-title">Personal Information</div>
+        <div class="step-card-sub">Your details must match your government-issued ID.</div>
+        <div class="f-section">
+          <div class="f-section-title">Applicant</div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">First Name</label><input class="f-input" id="aFirst" placeholder="Mercedaes"></div>
+            <div class="f-group"><label class="f-label">Last Name</label><input class="f-input" id="aLast" placeholder="Ellis"></div>
+          </div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="aEmail" type="email" placeholder="you@email.com"></div>
+            <div class="f-group"><label class="f-label">Phone</label><input class="f-input" id="aPhone" type="tel" placeholder="(815) 000-0000"></div>
+          </div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Date of Birth</label><input class="f-input" id="aDOB" type="date"></div>
+            <div class="f-group"><label class="f-label">SSN (last 4 only)</label><input class="f-input" id="aSSN" placeholder="****" maxlength="4"></div>
+          </div>
+        </div>
+        <div class="f-section">
+          <div class="f-section-title">Current Address</div>
+          <div class="f-row one"><div class="f-group"><label class="f-label">Street Address</label><input class="f-input" id="aCurAddr" placeholder="773 N Edgemere Dr, Apt A"></div></div>
+          <div class="f-row three">
+            <div class="f-group"><label class="f-label">City</label><input class="f-input" id="aCurCity" placeholder="Bourbonnais"></div>
+            <div class="f-group"><label class="f-label">State</label><select class="f-select" id="aCurState"><option value="">State</option><option>IL</option><option>TX</option><option>FL</option><option>Other</option></select></div>
+            <div class="f-group"><label class="f-label">Zip</label><input class="f-input" id="aCurZip" placeholder="60914"></div>
+          </div>
+        </div>
+        <div class="f-section">
+          <div class="f-section-title">Employment & Income</div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Occupation</label><input class="f-input" id="aOcc" placeholder="Security Officer"></div>
+            <div class="f-group"><label class="f-label">Monthly Income</label><input class="f-input" id="aIncome" placeholder="$2,700"></div>
+          </div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Adults</label><input class="f-input" id="aAdults" type="number" placeholder="2" min="1"></div>
+            <div class="f-group"><label class="f-label">Children</label><input class="f-input" id="aChildren" type="number" placeholder="0" min="0"></div>
+          </div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Pets?</label><select class="f-select" id="aPets"><option>No</option><option>Yes — dog</option><option>Yes — cat</option><option>Yes — other</option></select></div>
+            <div class="f-group"><label class="f-label">Move-In Date</label><input class="f-input" id="aMoveIn" type="date"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="submit-full" style="background:var(--mist);color:var(--navy);flex:0 0 120px;" onclick="goApplyStep(1)">← Back</button>
+        <button class="submit-full" onclick="goApplyStep(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: ID Verification -->
+    <div class="apply-step" id="astep-3">
+      <div class="step-card">
+        <div class="step-card-title">Identity Verification</div>
+        <div class="step-card-sub">Upload a clear photo of your government-issued ID. Required for all applications.</div>
+        <div class="id-steps">
+          <div class="id-step active" id="ids-1"><span class="id-step-num">📄</span>ID Front</div>
+          <div class="id-step" id="ids-2"><span class="id-step-num">🔄</span>ID Back</div>
+          <div class="id-step" id="ids-3"><span class="id-step-num">🤳</span>Selfie</div>
+          <div class="id-step" id="ids-4"><span class="id-step-num">✅</span>Verified</div>
+        </div>
+        <!-- Front -->
+        <div id="id-front-zone">
+          <p style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;">Step 1 — Front of ID (Driver's License, State ID, or Passport)</p>
+          <div class="id-upload-zone" onclick="document.getElementById('idFrontFile').click()">
+            <input type="file" id="idFrontFile" accept="image/*" onchange="handleIDUpload('front',this)">
+            <div class="upload-icon">🪪</div>
+            <div class="upload-label">Click to upload front of ID</div>
+            <div class="upload-sub">JPG, PNG or HEIC · Max 20MB</div>
+          </div>
+          <div class="id-preview" id="idFrontPreview">
+            <div class="id-preview-icon">✅</div>
+            <div class="id-preview-info">
+              <div class="id-preview-name" id="idFrontName">—</div>
+              <div class="id-preview-size" id="idFrontSize">—</div>
+            </div>
+          </div>
+        </div>
+        <!-- Back -->
+        <div id="id-back-zone" style="display:none;margin-top:20px;">
+          <p style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;">Step 2 — Back of ID</p>
+          <div class="id-upload-zone" onclick="document.getElementById('idBackFile').click()">
+            <input type="file" id="idBackFile" accept="image/*" onchange="handleIDUpload('back',this)">
+            <div class="upload-icon">🔄</div>
+            <div class="upload-label">Click to upload back of ID</div>
+            <div class="upload-sub">JPG, PNG or HEIC · Max 20MB</div>
+          </div>
+          <div class="id-preview" id="idBackPreview">
+            <div class="id-preview-icon">✅</div>
+            <div class="id-preview-info">
+              <div class="id-preview-name" id="idBackName">—</div>
+              <div class="id-preview-size" id="idBackSize">—</div>
+            </div>
+          </div>
+        </div>
+        <!-- Selfie -->
+        <div id="id-selfie-zone" style="display:none;margin-top:20px;">
+          <p style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;">Step 3 — Selfie (hold your ID next to your face)</p>
+          <div class="id-upload-zone" onclick="document.getElementById('idSelfieFile').click()">
+            <input type="file" id="idSelfieFile" accept="image/*" capture="user" onchange="handleIDUpload('selfie',this)">
+            <div class="upload-icon">🤳</div>
+            <div class="upload-label">Click to take or upload selfie</div>
+            <div class="upload-sub">Hold your ID clearly visible next to your face</div>
+          </div>
+          <div class="id-preview" id="idSelfiePreview">
+            <div class="id-preview-icon">✅</div>
+            <div class="id-preview-info">
+              <div class="id-preview-name" id="idSelfieName">—</div>
+              <div class="id-preview-size" id="idSelfieSize">—</div>
+            </div>
+          </div>
+        </div>
+        <!-- Verified state -->
+        <div class="id-verified-badge" id="idVerifiedBadge">
+          ✅ Identity documents uploaded successfully — pending review
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="submit-full" style="background:var(--mist);color:var(--navy);flex:0 0 120px;" onclick="goApplyStep(2)">← Back</button>
+        <button class="submit-full" id="idNextBtn" onclick="goApplyStep(4)" disabled style="opacity:.5;cursor:not-allowed;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Payment -->
+    <div class="apply-step" id="astep-4">
+      <div class="step-card">
+        <div class="step-card-title">Application Fee — $75</div>
+        <div class="step-card-sub">Select your preferred payment method. Fee is non-refundable.</div>
+        <div class="pay-methods" id="payMethods">
+          <div class="pay-method" onclick="selectPay(this,'Zelle')"><div class="pay-icon">💸</div><div class="pay-name">Zelle</div></div>
+          <div class="pay-method" onclick="selectPay(this,'Cash App')"><div class="pay-icon">💚</div><div class="pay-name">Cash App</div></div>
+          <div class="pay-method" onclick="selectPay(this,'PayPal')"><div class="pay-icon">🅿️</div><div class="pay-name">PayPal</div></div>
+          <div class="pay-method" onclick="selectPay(this,'Apple Pay')"><div class="pay-icon">🍎</div><div class="pay-name">Apple Pay</div></div>
+          <div class="pay-method" onclick="selectPay(this,'Chime')"><div class="pay-icon">🟢</div><div class="pay-name">Chime</div></div>
+          <div class="pay-method" onclick="selectPay(this,'ACH')"><div class="pay-icon">🏦</div><div class="pay-name">ACH</div></div>
+          <div class="pay-method" onclick="selectPay(this,'USDC')"><div class="pay-icon">🪙</div><div class="pay-name">USDC</div></div>
+          <div class="pay-method" onclick="selectPay(this,'Store')"><div class="pay-icon">🏪</div><div class="pay-name">Store</div></div>
+        </div>
+        <div id="payInstructions" style="display:none;background:var(--cream);border:1.5px solid var(--rule);border-radius:10px;padding:18px;margin-top:4px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--slate);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">Payment Instructions</div>
+          <div id="payInstrContent" style="font-size:13.5px;color:var(--ink);line-height:1.8;"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="submit-full" style="background:var(--mist);color:var(--navy);flex:0 0 120px;" onclick="goApplyStep(3)">← Back</button>
+        <button class="submit-full" onclick="goApplyStep(5)">I've Paid — Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Review & Submit -->
+    <div class="apply-step" id="astep-5">
+      <div class="step-card">
+        <div class="step-card-title">Review & Submit</div>
+        <div class="step-card-sub">Review your application details before submitting.</div>
+        <div id="reviewSummary"></div>
+        <div style="margin-top:20px;padding:16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;font-size:13px;color:#92400E;line-height:1.7;">
+          ⚠️ By submitting you authorize VIVIA Rentals to conduct background, credit, and identity checks per Fair Housing Act guidelines.
+        </div>
+      </div>
+      <button class="submit-full" onclick="submitApplication()" style="background:var(--green);">Submit Application ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TRACKING PAGE ══════════════ -->
+<div class="page" id="page-tracking">
+  <div class="tracking-wrap">
+    <div class="page-header">
+      <h2>Live Property Tracking</h2>
+      <p>Real-time portfolio status · VIVIA Rentals & Property Services</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="track-grid">
+      <div class="track-card">
+        <div class="track-card-label">Active Listings</div>
+        <div class="track-card-num">4</div>
+        <div class="track-card-sub">IL & TX markets</div>
+        <div class="track-card-badge badge-green">All Live</div>
+      </div>
+      <div class="track-card">
+        <div class="track-card-label">Total Leads</div>
+        <div class="track-card-num" id="kpiLeads">47</div>
+        <div class="track-card-sub">Across all properties</div>
+        <div class="track-card-badge badge-green">+12 this week</div>
+      </div>
+      <div class="track-card">
+        <div class="track-card-label">Applications</div>
+        <div class="track-card-num">3</div>
+        <div class="track-card-sub">Pending review</div>
+        <div class="track-card-badge badge-amber">2 In Review</div>
+      </div>
+      <div class="track-card">
+        <div class="track-card-label">Revenue / Mo</div>
+        <div class="track-card-num">$7,275</div>
+        <div class="track-card-sub">Combined rent</div>
+        <div class="track-card-badge badge-green">On Track</div>
+      </div>
+    </div>
+
+    <!-- Listings Table -->
+    <div class="listings-table">
+      <div class="table-header">
+        <div class="table-title">Portfolio — Live Status</div>
+        <button class="btn-sm btn-outline" onclick="refreshTracking()" style="font-size:12px;padding:6px 14px;">↻ Refresh</button>
+      </div>
+      <div class="t-wrap">
+        <table id="trackTable">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Rent</th>
+              <th>Status</th>
+              <th>Leads</th>
+              <th>Applications</th>
+              <th>Platform</th>
+              <th>Last Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="trackTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="activity-feed" style="margin-top:24px;">
+      <div class="table-header" style="border-bottom:1px solid var(--rule);">
+        <div class="table-title">Recent Activity</div>
+        <span class="live-dot"></span>
+      </div>
+      <div id="activityFeed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LANDLORD PAGE ══════════════ -->
+<div class="page" id="page-landlord">
+  <div class="listings-wrap">
+    <div class="page-header">
+      <h2>List Your Property</h2>
+      <p>VIVIA handles the entire tenant acquisition process — you just collect rent.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px;">
+      <div style="background:white;border:1px solid var(--rule);border-radius:16px;padding:28px;">
+        <div style="font-family:'Fraunces',serif;font-size:22px;color:var(--navy);margin-bottom:16px;">Property Submission</div>
+        <div class="f-section">
+          <div class="f-row"><div class="f-group"><label class="f-label">Your Name</label><input class="f-input" id="llName" placeholder="Full name"></div><div class="f-group"><label class="f-label">Phone</label><input class="f-input" id="llPhone" placeholder="(815) 000-0000"></div></div>
+          <div class="f-row one"><div class="f-group"><label class="f-label">Email</label><input class="f-input" id="llEmail" placeholder="you@email.com"></div></div>
+          <div class="f-row one"><div class="f-group"><label class="f-label">Property Address</label><input class="f-input" id="llAddr" placeholder="123 Main St, Chicago IL 60601" oninput="previewLandlordClone()"></div></div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Monthly Rent</label><input class="f-input" id="llRent" placeholder="$1,500" oninput="previewLandlordClone()"></div>
+            <div class="f-group"><label class="f-label">Beds / Baths</label><input class="f-input" id="llBeds" placeholder="3 bd / 2 ba"></div>
+          </div>
+          <div class="f-row">
+            <div class="f-group"><label class="f-label">Lease Term</label><select class="f-select" id="llLease"><option>12 months</option><option>Rent to Own</option><option>Monthly</option><option>6 months</option><option>Contact for details</option></select></div>
+            <div class="f-group"><label class="f-label">Property Type</label><select class="f-select" id="llType"><option>Single Family</option><option>Townhouse</option><option>Condo</option><option>Multi-Family</option><option>Apartment</option></select></div>
+          </div>
+        </div>
+        <button class="submit-full" onclick="submitLandlord()">Submit Property →</button>
+      </div>
+      <div style="background:var(--navy);border-radius:16px;padding:28px;color:white;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Listing Preview</div>
+        <div id="landlordPreview">
+          <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;font-size:13.5px;color:rgba(255,255,255,.5);text-align:center;">Fill in property details to preview listing</div>
+        </div>
+        <div style="margin-top:24px;padding:18px;background:rgba(255,255,255,.05);border-radius:10px;border:1px solid rgba(255,255,255,.1);">
+          <div style="font-size:12px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:10px;">POWERED BY</div>
+          <div style="font-size:16px;font-weight:600;color:white;margin-bottom:6px;">TurboTenant</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.7;">Free for landlords. Connected to 40+ platforms & 15M+ renters.</div>
+          <a href="https://turbotenant.com/r/T3duZXI6MTEwNjUwMg==" target="_blank" style="display:inline-block;margin-top:14px;background:var(--gold);color:white;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;">Open TurboTenant →</a>
+        </div>
+      </div>
+    </div>
+    <!-- Partner logos -->
+    <div style="background:white;border:1px solid var(--rule);border-radius:14px;padding:28px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--slate);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">Syndication Network — 40+ Platforms</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Apartments.com</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Rent.com</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Realtor.com</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Redfin</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Zillow</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Homes.com</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Zumper</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">ApartmentList</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Dwellsy</span>
+        <span style="background:var(--mist);color:var(--navy);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">Facebook Marketplace</span>
+        <span style="background:var(--mist);color:var(--slate);padding:6px 14px;border-radius:6px;font-size:13px;">+ 30 more</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROPERTY DETAIL MODAL -->
+<div class="modal-bg" id="propModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePropModal()">✕</button>
+    <div class="modal-hero">
+      <div class="eyebrow" id="mEyebrow">Active Listing</div>
+      <h3 id="mTitle">Property Address</h3>
+      <p id="mSub">Apply now to secure this property</p>
+    </div>
+    <div class="modal-body">
+      <div class="f-section">
+        <div class="f-section-title">Listing Details — Auto-Cloned</div>
+        <div class="clone-preview">
+          <div class="clone-preview-label">Property Data</div>
+          <div class="clone-field"><span class="clone-key">Address</span><span class="clone-val" id="mAddr">—</span></div>
+          <div class="clone-field"><span class="clone-key">Monthly Rent</span><span class="clone-val" id="mRent">—</span></div>
+          <div class="clone-field"><span class="clone-key">Security Deposit</span><span class="clone-val" id="mDep">—</span></div>
+          <div class="clone-field"><span class="clone-key">Lease Term</span><span class="clone-val" id="mLease">—</span></div>
+          <div class="clone-field"><span class="clone-key">Bedrooms / Baths</span><span class="clone-val" id="mBeds">—</span></div>
+          <div class="clone-field"><span class="clone-key">Application Fee</span><span class="clone-val">$75.00</span></div>
+          <div class="clone-field"><span class="clone-key">TurboTenant ID</span><span class="clone-val" id="mTTID">—</span></div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-section-title">Quick Applicant Info</div>
+        <div class="f-row">
+          <div class="f-group"><label class="f-label">First Name</label><input class="f-input" id="qFirst" placeholder="Mercedaes"></div>
+          <div class="f-group"><label class="f-label">Last Name</label><input class="f-input" id="qLast" placeholder="Ellis"></div>
+        </div>
+        <div class="f-row">
+          <div class="f-group"><label class="f-label">Email</label><input class="f-input" id="qEmail" type="email" placeholder="you@email.com"></div>
+          <div class="f-group"><label class="f-label">Phone</label><input class="f-input" id="qPhone" placeholder="(815) 000-0000"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="submit-full" style="margin:0;" onclick="startFullApply()">Start Full Application →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-brand">VIVIA<span>.</span></div>
+      <div class="f-tagline">Premium residential property management in Illinois and Georgia, operated by TurboTenant Inc.</div>
+      <div class="f-contact">
+        <div>📞 <a href="tel:4165350123">(877) 780-4236</a></div>
+        <div>✉️ <a href="mailto:mercedes@viviaproperty.com">receipt@viviaproperty.com</a></div>
+        <div>✉️ <a href="mailto:ops@viviaproperty.com">ops@viviaproperty.com</a></div>
+        <div>💚 Cash App: $VIVIAProperty</div>
+      </div>
+    </div>
+    <div>
+      <div class="f-col-title">Renters</div>
+      <ul class="f-links">
+        <li><a href="#" onclick="showPage('listings')">Active Listings</a></li>
+        <li><a href="#" onclick="showPage('apply')">Apply Online</a></li>
+        <li><a href="https://server.fillout.com/apply-now" target="_blank">Fillout Application</a></li>
+        <li><a href="#" onclick="showPage('apply')">Pay Rent</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-col-title">Landlords</div>
+      <ul class="f-links">
+        <li><a href="#" onclick="showPage('landlord')">List Property</a></li>
+        <li><a href="https://turbotenant.com/r/T3duZXI6MTEwNjUwMg==" target="_blank">TurboTenant Portal</a></li>
+        <li><a href="#" onclick="showPage('tracking')">Live Tracking</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-col-title">Company</div>
+      <ul class="f-links">
+        <li><a href="#">About VIVIA</a></li>
+        <li><a href="#">Fair Housing</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="f-legal">© 2026 VIVIA Rentals & Property Services · AP Illinois Management LLC</div>
+    <div class="f-legal">Illinois · Texas · Equal Housing Opportunity 🏠</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span id="toastMsg">Done!</span></div>
+
+<script>
+// ── DATA ──
+const LISTINGS = [
+  { id:'TT-2905', addr:'10115 S California Ave', city:'Chicago, IL', rent:2905, deposit:2905, lease:'Rent to Own (33 mo)', beds:'3 bd / 2 ba', status:'Live', leads:28, apps:2, ttid:'2295589', emoji:'🏡', tags:['Rent to Own','Chicago','33 Months'] },
+  { id:'TT-1300', addr:'7505 Emerson St', city:'Morton Grove, IL', rent:1300, deposit:1300, lease:'12 Months', beds:'3 bd / 2 ba', status:'Live', leads:12, apps:1, ttid:'2511949', emoji:'🏠', tags:['12 Months','Morton Grove','Single Family'] },
+  { id:'TT-1150', addr:'606 Cochise Cir', city:'Bolingbrook, IL', rent:1150, deposit:1150, lease:'12 Months', beds:'3 bd / 1 ba', status:'Live', leads:7, apps:0, ttid:'2295591', emoji:'🏘', tags:['12 Months','Bolingbrook'] },
+  { id:'TT-1920', addr:'1920 Cherry Bark Ln', city:'Forney, TX', rent:1920, deposit:1920, lease:'12 Months', beds:'4 bd / 2 ba', status:'Live', leads:8, apps:1, ttid:'2295590', emoji:'☀️', tags:['12 Months','Texas'] },
+];
+
+const ACTIVITY = [
+  { icon:'🏠', bg:'#DBEAFE', title:'Sophia Anderson sent a tour request for 7505 Emerson St', sub:'Found via Apartments.com', time:'2h ago' },
+  { icon:'📋', bg:'#DCFCE7', title:'Mercedaes Ellis application approved — 123 Wiley Oaks Ln', sub:'$75 fee paid · Fillout', time:'4h ago' },
+  { icon:'🔔', bg:'#FEF3C7', title:'New lead: Shawn Jones — 7505 Emerson St', sub:'Asking about pricing structure', time:'5h ago' },
+  { icon:'✅', bg:'#DCFCE7', title:'Marketing turned on — 1222 S 4th St, Aurora IL', sub:'Live on 40+ platforms', time:'1d ago' },
+  { icon:'💳', bg:'#EDE9FF', title:'Rent payment received — 10115 S California Ave', sub:'$2,905 via ACH', time:'2d ago' },
+];
+
+const PAY_INSTR = {
+  'Zelle': 'Open your bank app → Send Money with Zelle → Phone: <strong>(416) 535-0123</strong> → Amount: $75 → Memo: your name + property address',
+  'Cash App': 'Open Cash App → Search <strong>$VIVIARentals</strong> → Enter $75 → Add your name + property in note',
+  'PayPal': 'Go to <strong>paypal.me/viviaproperty</strong> → Enter $75 → Select "Sending to a friend" to avoid fees → Add property in note',
+  'Apple Pay': 'Open Messages → Text <strong>(416) 535-0123</strong> → Tap Apple Pay icon → Enter $75 → Include your name + property',
+  'Chime': 'Open Chime → Pay Anyone → Search <strong>receipt@viviaproperty.com</strong> → $75',
+  'ACH': 'Email <strong>mercedes@viviaproperty.com</strong> to receive a secure Stripe ACH link. Include your name and property.',
+  'USDC': 'Contact us at <strong>(989) 494-2842</strong> to receive USDC wallet address. Send equivalent of $75. Include your name in transaction memo.',
+  'Store': 'Visit nearest MoneyGram or Western Union → Send to VIVIA Rentals & Property Services → $75 → Call <strong>(989) 494-2842</strong> with confirmation number',
+};
+
+// State
+let currentApplyStep = 1;
+let selectedProp = null;
+let idUploads = { front: false, back: false, selfie: false };
+
+// ── NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const map = {home:0,listings:1,apply:2,tracking:3,landlord:4};
+  if (map[id] !== undefined) tabs[map[id]].classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'listings') renderProps();
+  if (id === 'tracking') renderTracking();
+  if (id === 'apply') renderPropSelector();
+}
+
+function toggleMobile() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ── HERO ──
+function switchRole(type, btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.info-card').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ic-' + type).classList.add('active');
+}
+
+// ── LISTINGS ──
+function renderProps() {
+  const g = document.getElementById('propGrid');
+  g.innerHTML = LISTINGS.map(p => `
+    <div class="prop-card" onclick="openPropModal('${p.id}')">
+      <div class="prop-img">${p.emoji}</div>
+      <div class="prop-body">
+        <div class="prop-price">$${p.rent.toLocaleString()}<span>/mo</span></div>
+        <div class="prop-addr">${p.addr}<br>${p.city}</div>
+        <div class="prop-tags">
+          <span class="tag tag-green">Live</span>
+          ${p.tags.map(t=>`<span class="tag tag-navy">${t}</span>`).join('')}
+        </div>
+        <button class="prop-btn">View Details & Apply</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPropModal(id) {
+  const p = LISTINGS.find(l => l.id === id);
+  if (!p) return;
+  selectedProp = p;
+  document.getElementById('mEyebrow').textContent = p.city;
+  document.getElementById('mTitle').textContent = p.addr;
+  document.getElementById('mSub').textContent = `${p.beds} · ${p.lease} · Available Now`;
+  document.getElementById('mAddr').textContent = `${p.addr}, ${p.city}`;
+  document.getElementById('mRent').textContent = `$${p.rent.toLocaleString()}/mo`;
+  document.getElementById('mDep').textContent = `$${p.deposit.toLocaleString()}`;
+  document.getElementById('mLease').textContent = p.lease;
+  document.getElementById('mBeds').textContent = p.beds;
+  document.getElementById('mTTID').textContent = p.ttid;
+  document.getElementById('propModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePropModal() {
+  document.getElementById('propModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function startFullApply() {
+  closePropModal();
+  showPage('apply');
+  // Auto-select the property in the apply form
+  if (selectedProp) {
+    setTimeout(() => selectApplyProp(selectedProp.id), 100);
+  }
+}
+
+// ── APPLY ──
+function renderPropSelector() {
+  const sel = document.getElementById('propSelector');
+  sel.innerHTML = `
+    <div class="prop-sel-header">
+      <span>Choose a property</span>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--slate);">AUTO-FILLS FORM</span>
+    </div>
+    ${LISTINGS.map(p => `
+      <div class="prop-sel-opt" id="pso-${p.id}" onclick="selectApplyProp('${p.id}')">
+        <div class="prop-radio"><div class="prop-radio-inner"></div></div>
+        <div class="prop-sel-info">
+          <div class="prop-sel-addr">${p.addr}, ${p.city}</div>
+          <div class="prop-sel-price">$${p.rent.toLocaleString()}/mo · ${p.lease} · ${p.beds}</div>
+        </div>
+        <span style="font-size:11px;background:var(--mist);color:var(--navy);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;">${p.id}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+function selectApplyProp(id) {
+  document.querySelectorAll('.prop-sel-opt').forEach(o => o.classList.remove('selected'));
+  const opt = document.getElementById('pso-' + id);
+  if (opt) opt.classList.add('selected');
+  const p = LISTINGS.find(l => l.id === id);
+  if (!p) return;
+  selectedProp = p;
+  document.getElementById('cfAddr').textContent = `${p.addr}, ${p.city}`;
+  document.getElementById('cfRent').textContent = `$${p.rent.toLocaleString()}/mo`;
+  document.getElementById('cfDeposit').textContent = `$${p.deposit.toLocaleString()}`;
+  document.getElementById('cfLease').textContent = p.lease;
+  document.getElementById('propAutofillPreview').style.display = 'block';
+}
+
+function goApplyStep(n) {
+  if (n === 2 && !selectedProp) { showToast('⚠️ Please select a property first.'); return; }
+  if (n > 1) {
+    document.querySelectorAll('.apply-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('astep-' + n).classList.add('active');
+    const progs = document.querySelectorAll('.prog-step');
+    progs.forEach((p,i) => {
+      p.classList.remove('current','done');
+      if (i+1 < n) p.classList.add('done');
+      if (i+1 === n) p.classList.add('current');
+    });
+    currentApplyStep = n;
+    if (n === 5) buildReview();
+    window.scrollTo(0, document.getElementById('page-apply').offsetTop + 64);
+  }
+}
+
+// ── ID UPLOAD ──
+function handleIDUpload(type, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const nameEl = document.getElementById('id' + cap(type) + 'Name');
+  const sizeEl = document.getElementById('id' + cap(type) + 'Size');
+  const preview = document.getElementById('id' + cap(type) + 'Preview');
+  nameEl.textContent = file.name;
+  sizeEl.textContent = (file.size/1024/1024).toFixed(2) + ' MB';
+  preview.classList.add('show');
+  idUploads[type] = true;
+  // Progress
+  if (type === 'front') {
+    document.getElementById('ids-1').classList.remove('active');
+    document.getElementById('ids-1').classList.add('done');
+    document.getElementById('ids-2').classList.add('active');
+    document.getElementById('id-back-zone').style.display = 'block';
+  } else if (type === 'back') {
+    document.getElementById('ids-2').classList.remove('active');
+    document.getElementById('ids-2').classList.add('done');
+    document.getElementById('ids-3').classList.add('active');
+    document.getElementById('id-selfie-zone').style.display = 'block';
+  } else if (type === 'selfie') {
+    document.getElementById('ids-3').classList.remove('active');
+    document.getElementById('ids-3').classList.add('done');
+    document.getElementById('ids-4').classList.add('active');
+    document.getElementById('idVerifiedBadge').classList.add('show');
+    const btn = document.getElementById('idNextBtn');
+    btn.removeAttribute('disabled');
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    showToast('✅ All ID documents uploaded!');
+  }
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ── PAYMENT ──
+function selectPay(el, method) {
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  const d = document.getElementById('payInstructions');
+  const c = document.getElementById('payInstrContent');
+  d.style.display = 'block';
+  c.innerHTML = PAY_INSTR[method] || 'Contact us for instructions.';
+}
+
+// ── REVIEW ──
+function buildReview() {
+  const p = selectedProp;
+  const html = `
+    <div class="clone-preview" style="margin-bottom:16px;">
+      <div class="clone-preview-label">Property</div>
+      <div class="clone-field"><span class="clone-key">Address</span><span class="clone-val">${p ? p.addr+', '+p.city : '—'}</span></div>
+      <div class="clone-field"><span class="clone-key">Rent</span><span class="clone-val">${p ? '$'+p.rent.toLocaleString()+'/mo' : '—'}</span></div>
+      <div class="clone-field"><span class="clone-key">Lease</span><span class="clone-val">${p ? p.lease : '—'}</span></div>
+    </div>
+    <div class="clone-preview">
+      <div class="clone-preview-label">Applicant</div>
+      <div class="clone-field"><span class="clone-key">Name</span><span class="clone-val">${(document.getElementById('aFirst').value||'—')+' '+(document.getElementById('aLast').value||'')}</span></div>
+      <div class="clone-field"><span class="clone-key">Email</span><span class="clone-val">${document.getElementById('aEmail').value||'—'}</span></div>
+      <div class="clone-field"><span class="clone-key">Phone</span><span class="clone-val">${document.getElementById('aPhone').value||'—'}</span></div>
+      <div class="clone-field"><span class="clone-key">Move-In</span><span class="clone-val">${document.getElementById('aMoveIn').value||'—'}</span></div>
+      <div class="clone-field"><span class="clone-key">ID Verified</span><span class="clone-val" style="color:${idUploads.front&&idUploads.selfie?'#166534':'#DC2626'}">${idUploads.front&&idUploads.selfie?'✓ Uploaded':'⚠ Missing'}</span></div>
+    </div>
+  `;
+  document.getElementById('reviewSummary').innerHTML = html;
+}
+
+function submitApplication() {
+  showToast('🎉 Application submitted! We\'ll be in touch within 48 hours.');
+  setTimeout(() => showPage('home'), 2000);
+}
+
+// ── TRACKING ──
+function renderTracking() {
+  const tbody = document.getElementById('trackTbody');
+  tbody.innerHTML = LISTINGS.map(p => `
+    <tr>
+      <td><strong style="color:var(--navy);">${p.addr}</strong><br><span class="mono">${p.city}</span></td>
+      <td><strong>$${p.rent.toLocaleString()}</strong><span class="mono">/mo</span></td>
+      <td><span class="status-pill pill-live"><span class="pill-dot"></span>Live</span></td>
+      <td><strong>${p.leads}</strong></td>
+      
