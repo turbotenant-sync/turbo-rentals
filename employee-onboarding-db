@@ -1,0 +1,96 @@
+You’re now in a Cloudflare Workers setup screen for your project:
+
+Employee Onboarding Database Table
+
+I’ll convert this into a clean production configuration so you don’t get stuck.
+
+⚙️ Cloudflare Worker Setup (Correct Configuration)
+🧠 What you’re building
+
+This should become:
+
+VIVIA Employee Onboarding API (Edge Backend)
+🚀 Build Command (IMPORTANT)
+If using standard Node project:
+npm run build
+If no build step (recommended for Workers):
+npx wrangler deploy
+🧾 Recommended Setup (BEST PRACTICE)
+⚡ Option A — Simple Worker (Recommended)
+
+If this is just API logic:
+
+Build command: none
+Deploy command: npx wrangler deploy
+⚡ Option B — Full Project (if using framework)
+
+If you’re using a JS framework:
+
+Build command: npm run build
+Deploy command: npx wrangler deploy
+📁 Recommended Worker Structure
+src/
+  index.js
+  onboarding.js
+  landlord.js
+  stripe.js
+wrangler.toml
+package.json
+🧠 What this Worker should do (your system logic)
+👤 Employee Onboarding API
+create employee record
+trigger training session
+assign landlord role
+sync to HubSpot
+activate dashboard access
+🏠 Landlord Flow
+onboarding
+property assignment
+TurboTenant sync
+listing activation
+💳 Billing Flow
+Stripe customer creation
+subscription setup
+payment verification
+⚙️ Example Worker Entry File
+export default {
+  async fetch(request) {
+    const body = await request.json();
+
+    if (body.type === "employee_onboarding") {
+      return new Response(JSON.stringify({
+        status: "employee_created"
+      }));
+    }
+
+    return new Response("OK");
+  }
+};
+🔐 Recommended wrangler.toml
+name = "vivia-onboarding-api"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+🚀 FINAL RECOMMENDATION (IMPORTANT)
+
+For your system, Cloudflare Worker should be:
+
+✔ onboarding API layer
+✔ webhook receiver
+✔ event router
+✔ edge authentication layer
+
+NOT a full backend (keep heavy logic in n8n + Stripe + HubSpot)
+
+🧠 Best Architecture for YOU
+Cloudflare Worker (Edge API)
+        ↓
+n8n Workflow Engine
+        ↓
+Stripe / HubSpot / TurboTenant
+        ↓
+Database / Dashboard
+🚀 If you want next upgrade
+
+I can build:
+
+🧠 Full Cloudflare + n8n hy
