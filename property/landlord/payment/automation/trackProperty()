@@ -1,0 +1,91 @@
+🌐 Domain Overview — VIVIAPROPERTY.COM
+📌 Core Identity
+Domain: viviaproperty.com
+Registry ID: 3083856759_DOMAIN_COM-VRSN
+Registrar: Tucows Domains Inc.
+Name servers: Google Domains (Cloud DNS)
+⚙️ DNS Architecture (Important)
+🧠 Nameservers
+NS-CLOUD-C1.GOOGLEDOMAINS.COM
+NS-CLOUD-C2.GOOGLEDOMAINS.COM
+NS-CLOUD-C3.GOOGLEDOMAINS.COM
+NS-CLOUD-C4.GOOGLEDOMAINS.COM
+What this means:
+Your DNS is fully managed in Google Cloud DNS
+You can safely connect:
+Netlify (frontend hosting)
+Stripe (billing)
+HubSpot (CRM routing)
+TurboTenant (rental workflows)
+n8n (automation endpoints)
+🔐 Domain Security Status
+Domain Locks (GOOD)
+clientTransferProhibited
+clientUpdateProhibited
+Meaning:
+Prevents unauthorized transfers
+Prevents accidental DNS hijacking
+Strong baseline security for SaaS operations
+🛡️ DNSSEC (VERY IMPORTANT)
+DNSSEC: unsigned
+⚠️ What this means:
+DNS security signing is NOT enabled
+Domain is more vulnerable to spoofing attacks
+🚀 Recommended Fix:
+
+Enable DNSSEC in Google Cloud DNS:
+
+Add DS record (already partially present)
+Complete signing chain validation
+🔑 DS RECORD (SECURITY ROOT)
+Key Tag: 2371  
+Algorithm: 13 (ECDSA P-256)  
+Digest Type: SHA256  
+Digest: 1CC1856C457DCF157CFD4209E144CCCBB92C12F5362200A8076DF8D03ED87E5D
+Meaning:
+
+This is your DNS trust anchor
+
+Used to verify DNS authenticity
+Required for full DNSSEC activation
+🚀 SYSTEM INTEGRATION READINESS
+
+Your domain is ready for:
+
+🏠 Property System
+listings.viviaproperty.com
+api.viviaproperty.com
+💳 Payments
+Stripe checkout
+billing.viviaproperty.com
+🤖 Automation Layer
+n8n.viviaproperty.com
+hooks.viviaproperty.com
+🏢 Rental Platform
+turbotenant.viviaproperty.com integration
+📲 Communication
+sms.viviaproperty.com (Twilio webhook routing)
+whatsapp.viviaproperty.com
+⚠️ IMPORTANT RISKS
+1. DNSSEC not fully enabled
+
+This is your highest priority fix
+
+2. Centralized DNS dependency
+
+You rely fully on Google DNS:
+
+Good for stability
+But single control plane
+3. No visible CDN layer yet
+
+Recommended:
+
+Netlify / Cloudflare in front
+🧠 RECOMMENDED PRODUCTION ARCHITECTURE
+User → Netlify (frontend)
+     → Cloudflare (CDN optional)
+     → API Layer (n8n / serverless)
+     → Stripe (billing)
+     → HubSpot (CRM)
+     → TurboTenant (rental ops)
