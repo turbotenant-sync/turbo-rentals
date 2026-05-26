@@ -131,7 +131,7 @@ Step 5 — Zite Employee Record
 Employee ID generated
 Conversation + task routing activated
 Step 6 — Cal.com Training
-https://cal.com/turbo-rentals/vivia-remote-property-onboarding
+https://cal.com/turbo-rentals/tenant-landlord-services
 📊 Service Offer Options
 Rental Management
 Payment Processing
@@ -152,7 +152,7 @@ Status: Sent → Queued → Delivered
     "sms_verification": true
   },
   "integrations": {
-    "stripe": "acct_1TSa7TDI5ZfGRQdN",
+    "stripe": "bpc_1TaPNUDI5ZfGRQdNl8QFpcs7",
     "hubspot": "147969685",
     "turbotenant": "active",
     "zite": "enabled"
