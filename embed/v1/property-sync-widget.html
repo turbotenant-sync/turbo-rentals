@@ -1,0 +1,90 @@
+🚀 Stripe AI Integration (VIVIA Production Version)
+🧠 Purpose
+
+This module enables AI-powered billing, subscriptions, and payment automation inside your rental platform using Stripe + LLM agents.
+
+It connects:
+
+Stripe billing system
+AI agents (OpenAI / LangChain / Vercel AI SDK)
+Property management workflows
+TurboTenant + onboarding pipelines
+⚙️ Core Capabilities for Your System
+💳 1. Payment Automation
+Create subscriptions for landlords
+Auto-generate invoices
+Handle rent collection workflows
+Manage failed payments
+🏠 2. Property Workflow Billing
+Charge per property listing
+Charge per active tenant
+Billing per onboarding session
+Stripe-connected landlord accounts
+🤖 3. AI Agent Control Layer
+
+Your AI agent can:
+
+create customers
+update subscriptions
+issue refunds
+track invoices
+trigger billing events from n8n
+🔗 Stripe MCP Integration (Secure Layer)
+https://mcp.stripe.com
+
+Used for:
+
+secure AI → Stripe communication
+OAuth-based authentication
+controlled API access via restricted keys
+🔐 Recommended Secure Setup
+Restricted API Key (IMPORTANT)
+Use rk_* restricted API keys instead of full secret keys
+
+Why:
+
+safer automation
+limited permissions per workflow
+reduces exposure risk in n8n / GitHub Actions
+🧠 VIVIA AI Agent Use Case
+Example Agent Role
+Stripe Billing Agent for VIVIA Rentals
+Responsibilities:
+generate rent invoices
+activate landlord billing accounts
+pause subscriptions on vacancy
+manage payment retries
+sync billing status to HubSpot
+⚡ Example Integration (Your System Version)
+n8n Workflow Trigger → Stripe Agent
+{
+  event: "property_activated",
+  action: "create_stripe_subscription",
+  customer_type: "landlord",
+  billing_model: "per_property"
+}
+🏗️ VIVIA Billing Architecture
+Tenant → Rent Payment → Stripe → Webhook → n8n → HubSpot → Dashboard Update
+📡 MCP + Agent Flow (Advanced)
+AI Agent
+  ↓
+Stripe Toolkit (MCP)
+  ↓
+Restricted API Key (rk_*)
+  ↓
+Billing Action (create/update/refund)
+  ↓
+Webhook Event
+  ↓
+n8n Workflow
+  ↓
+TurboTenant Sync
+🔥 What this unlocks for your platform
+
+You can now build:
+
+🏠 Auto-billed property listings
+👤 AI onboarding assistant for landlords
+💳 self-healing payment system (failed rent retries)
+📊 real-time revenue tracking dashboard
+🤖 fully autonomous rental ops agent
