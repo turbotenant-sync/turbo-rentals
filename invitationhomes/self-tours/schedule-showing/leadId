@@ -1,0 +1,421 @@
+# VIVIA Property Tour & Go-Live System Architecture
+
+## 🏗️ Core Flow
+
+```text
+Lead Source
+   ↓
+Fillout Form / Self-Tour Booking
+   ↓
+Validation + Identity Check
+   ↓
+Slack Notifications (#property-go-live)
+   ↓
+HubSpot Lead Creation / Update
+   ↓
+Stripe Customer + Payment Flow
+   ↓
+Property Verification Workflow
+   ↓
+Tour Scheduling / Self-Tour Access
+   ↓
+GitHub Actions Automation
+   ↓
+Property Status → LIVE
+```
+
+---
+
+# 🌐 FRONTEND LAYER
+
+## Main Applications
+
+### 📋 Fillout Forms
+
+Use for:
+
+* Self-tour scheduling
+* Landlord onboarding
+* Property intake
+* Employee onboarding
+
+### 🏡 Zite PWA
+
+Use as:
+
+* Main dashboard
+* Tenant portal
+* Tour management interface
+* Property status tracker
+
+Recommended domain:
+
+```text
+https://turbo-tenant.zite.so
+```
+
+---
+
+# 🧠 DATA MODEL
+
+## Primary IDs
+
+| Field               | Purpose                  |
+| ------------------- | ------------------------ |
+| `lead_id`           | Prospect tracking        |
+| `property_id`       | Property tracking        |
+| `listing_id`        | TurboTenant listing      |
+| `workflow_id`       | Automation routing       |
+| `landlord_id`       | Owner identification     |
+| `tracking_id`       | Live deployment tracking |
+| `stripe_account_id` | Payments                 |
+| `tour_id`           | Tour scheduling          |
+
+---
+
+# 📥 FORM SUBMISSION FLOW
+
+## Fillout Submission
+
+### Trigger:
+
+Prospect submits:
+
+* Name
+* Phone
+* Email
+* Address
+* Tour Type
+
+### Actions:
+
+```text
+1. Validate fields
+2. Generate tracking_id
+3. Create Slack alert
+4. Create/Update HubSpot contact
+5. Create Stripe customer
+6. Create GitHub issue
+7. Queue tour workflow
+```
+
+---
+
+# 💬 SLACK AUTOMATION LAYER
+
+## Main Channel
+
+```text
+#property-go-live
+```
+
+---
+
+## Suggested Slack Channels
+
+| Channel              | Purpose          |
+| -------------------- | ---------------- |
+| `#property-go-live`  | Main deployment  |
+| `#tour-scheduled`    | Tours            |
+| `#tenant-onboarding` | Verification     |
+| `#payments-review`   | Stripe events    |
+| `#listing-approvals` | Publishing       |
+| `#automation-errors` | Failed workflows |
+
+---
+
+## Slack Payload Example
+
+```json
+{
+  "lead_name": "Caroline Moore",
+  "property_id": "2568463",
+  "tour_type": "Self-Guided",
+  "workflow_id": "property_live",
+  "status": "verification_pending"
+}
+```
+
+---
+
+# 💳 STRIPE LAYER
+
+## Stripe Objects
+
+### Customer
+
+Created automatically from:
+
+* Email
+* Phone
+* Lead ID
+
+### Metadata
+
+Attach:
+
+```json
+{
+  "property_id": "2568463",
+  "lead_id": "4",
+  "workflow_id": "property_live",
+  "landlord_id": "1143214"
+}
+```
+
+---
+
+## Stripe Events
+
+| Event                        | Action                |
+| ---------------------------- | --------------------- |
+| `checkout.session.completed` | Mark payment complete |
+| `customer.created`           | Sync CRM              |
+| `payment_intent.succeeded`   | Unlock onboarding     |
+| `account.updated`            | Verify landlord       |
+
+---
+
+# 🧩 GITHUB AUTOMATION
+
+## Repository
+
+[turbotenant-sync/turbo-rentals](https://github.com/turbotenant-sync/turbo-rentals?utm_source=chatgpt.com)
+
+---
+
+## GitHub Actions Flow
+
+### Trigger
+
+```yaml
+on:
+  repository_dispatch:
+  workflow_dispatch:
+```
+
+---
+
+## Required Permissions
+
+```yaml
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+```
+
+---
+
+## Example Workflow
+
+```yaml
+name: Property Go Live
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start Workflow
+        run: echo "Property deployment started"
+```
+
+---
+
+# 🤖 AUTOMATION ENGINE
+
+## State Machine
+
+| Status                 | Meaning         |
+| ---------------------- | --------------- |
+| `draft`                | Form started    |
+| `verification_pending` | Awaiting checks |
+| `payment_pending`      | Awaiting Stripe |
+| `approved`             | Cleared         |
+| `tour_scheduled`       | Tour active     |
+| `listing_ready`        | Publishing      |
+| `live`                 | Property live   |
+
+---
+
+# 🏡 SELF-TOUR FLOW
+
+## InvitationHomes-style Flow
+
+```text
+User books tour
+   ↓
+Identity verification
+   ↓
+Phone verification
+   ↓
+Slack approval
+   ↓
+Keypad instructions
+   ↓
+Self-tour access
+```
+
+---
+
+# 📲 SMS / WHATSAPP
+
+## Twilio Integration
+
+### Send:
+
+* Tour reminders
+* Verification links
+* Access codes
+* Reschedule links
+
+---
+
+## SMS Template
+
+```text
+Your self-tour is confirmed.
+
+Property:
+[Address]
+
+Time:
+[Date + Time]
+
+Bring a valid ID.
+```
+
+---
+
+# 📊 HUBSPOT LAYER
+
+## Contact Lifecycle
+
+| Stage          | Trigger             |
+| -------------- | ------------------- |
+| New Lead       | Form submit         |
+| Verified       | ID approved         |
+| Tour Scheduled | Booking complete    |
+| Applicant      | Application started |
+| Approved       | Payment complete    |
+| Tenant         | Lease signed        |
+
+---
+
+# 🔐 SECURITY
+
+## Never expose:
+
+* Active GitHub runner tokens
+* Stripe secret keys
+* Twilio auth tokens
+* Slack bot tokens
+
+---
+
+## Recommended Secret Storage
+
+Use:
+
+* GitHub Secrets
+* Zite environment variables
+* Fillout hidden fields
+
+---
+
+# 📡 WEBHOOKS
+
+## Recommended Endpoints
+
+### Fillout
+
+```text
+/api/webhooks/fillout
+```
+
+### Stripe
+
+```text
+/api/webhooks/stripe
+```
+
+### Slack
+
+```text
+/api/slack/events
+```
+
+### Twilio
+
+```text
+/api/twilio/messages
+```
+
+---
+
+# 📱 PWA SETUP
+
+## App Name
+
+```text
+VIVIA Property Operations
+```
+
+---
+
+## Features
+
+* Mobile install
+* Offline caching
+* Push notifications
+* Tour reminders
+* Live property board
+
+---
+
+# 🧠 RECOMMENDED STACK
+
+| Layer      | Platform            |
+| ---------- | ------------------- |
+| Forms      | Fillout             |
+| CRM        | HubSpot             |
+| Payments   | Stripe              |
+| Messaging  | Slack + Twilio      |
+| Dashboard  | Zite                |
+| Automation | GitHub Actions      |
+| Database   | Airtable / Supabase |
+| Hosting    | Vercel / Cloudflare |
+
+---
+
+# 🚀 FINAL END-TO-END FLOW
+
+```text
+Prospect submits form
+↓
+Slack alert created
+↓
+HubSpot contact synced
+↓
+Stripe customer created
+↓
+Verification workflow triggered
+↓
+Tour scheduled
+↓
+Self-tour access issued
+↓
+GitHub workflow updates property status
+↓
+Property marked LIVE
