@@ -1,0 +1,69 @@
+name: Turbo Rentals CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint --if-present
+
+      - name: Run tests
+        run: npm test --if-present
+
+      - name: Build application
+        run: npm run build --if-present
+
+  sms-feature-validation:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate SMS configuration
+        env:
+          SMS_PROVIDER: ${{ secrets.SMS_PROVIDER }}
+          SMS_API_KEY: ${{ secrets.SMS_API_KEY }}
+        run: |
+          echo "Validating SMS publishing configuration..."
+          test -n "$SMS_PROVIDER"
+          test -n "$SMS_API_KEY"
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-test
+      - sms-feature-validation
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy
+        run: |
+          echo "Deploying Turbo Rentals application..."
