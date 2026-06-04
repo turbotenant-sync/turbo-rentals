@@ -1,0 +1,21 @@
+curl https://api.stripe.com/v2/extend/workflows/{{WORKFLOW_ID}}/invoke \
+  -H "Authorization: Bearer {{SECRET_KEY}}" \
+  -H "Content-Type: application/json" \
+  -H "Stripe-Version: 2026-05-27.preview" \
+  -d '{
+    "input_parameters": {
+      "owner_name": "{{STRING}}",
+      "owner_email": "{{STRING}}",
+      "owner_phone": "{{STRING}}",
+      "property_address": "{{STRING}}",
+      "property_type": "{{single_family|apartment|townhome|condo|multi_family|duplex|triplex|commercial|mixed_use|room_rental|vacation_rental|mobile_home}}",
+      "lease_type": "{{12_month_lease|6_month_lease|month_to_month|short_term|corporate_housing|furnished_rental|student_housing|rent_to_own|vacation_rental|commercial_lease}}",
+      "monthly_rent": {{DECIMAL}},
+      "bedrooms": {{INTEGER}},
+      "bathrooms": {{DECIMAL}},
+      "pets_allowed": false,
+      "property_description": "{{STRING}}",
+      "amenities": {{TEXT ARRAY}},
+      "listing_status": "{{draft|intake_submitted}}"
+    }
+  }'
