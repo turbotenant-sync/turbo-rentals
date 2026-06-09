@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VIVIA — Owner Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0D2B4E;--navy-mid:#13366A;--navy-light:#1a4a8a;
+  --gold:#C8A96E;--gold-light:#E8D5A8;--gold-dim:rgba(200,169,110,.18);--gold-bg:rgba(200,169,110,.08);
+  --cream:#F7F3EC;--cream-dark:#EDE8DF;--border:#DDD5C4;
+  --slate:#4A6580;--slate-lt:#6A8099;--white:#fff;
+  --green:#1a7a4a;--green-bg:rgba(26,122,74,.1);
+  --red:#c0392b;--red-bg:rgba(192,57,43,.08);
+  --amber:#b8860b;--amber-bg:rgba(184,134,11,.1);
+  --sidebar-w:224px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--navy);display:flex;min-height:100vh;font-size:13px;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(200,169,110,.2);}
+.logo-mark{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold);letter-spacing:.14em;}
+.logo-mark span{color:rgba(255,255,255,.5);font-weight:400;font-size:18px;}
+.logo-sub{font-size:9px;color:rgba(200,169,110,.45);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;}
+.sb-section{padding:14px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,169,110,.38);}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.52);cursor:pointer;border-radius:6px;margin:1px 8px;transition:all .13s;border:none;background:none;width:calc(100% - 16px);text-align:left;}
+.nav-item:hover{background:rgba(200,169,110,.1);color:rgba(255,255,255,.82);}
+.nav-item.active{background:var(--gold-dim);color:var(--gold);}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:9px;font-weight:800;padding:1px 6px;border-radius:9px;}
+.sb-footer{margin-top:auto;padding:14px;border-top:1px solid rgba(200,169,110,.15);}
+.owner-chip{display:flex;align-items:center;gap:9px;}
+.owner-av{width:30px;height:30px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold);}
+.owner-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.78);}
+.owner-role{font-size:10px;color:rgba(200,169,110,.55);}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--navy);}
+.topbar-actions{display:flex;gap:9px;align-items:center;}
+.topbar-btn{background:var(--navy);color:var(--gold);border:none;padding:7px 16px;border-radius:6px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .18s;}
+.topbar-btn:hover{opacity:.85;}
+.topbar-btn.ghost{background:transparent;color:var(--slate);border:1px solid var(--border);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#1a7a4a;display:inline-block;margin-right:4px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.page-body{padding:22px 26px;flex:1;}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--white);border-radius:9px;padding:16px 18px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
+.stat-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-lt);margin-bottom:5px;}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--navy);line-height:1;}
+.stat-meta{font-size:10px;color:var(--slate-lt);margin-top:4px;}
+.stat-up{color:var(--green);}
+.stat-down{color:var(--red);}
+.stat-amber{color:var(--amber);}
+
+/* ── SECTION HEADER ── */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:var(--navy);}
+.section-link{font-size:11px;color:var(--gold);font-weight:600;cursor:pointer;text-decoration:none;border:none;background:none;}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:9px;overflow:hidden;border:1px solid var(--border);}
+.data-table th{padding:10px 14px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-lt);background:var(--cream);border-bottom:1px solid var(--border);text-align:left;}
+.data-table td{padding:11px 14px;font-size:12px;color:var(--navy);border-bottom:1px solid var(--cream-dark);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(247,243,236,.5);}
+.mono{font-family:'Courier New',monospace;font-size:10px;color:var(--slate);}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.badge-green{background:var(--green-bg);color:var(--green);}
+.badge-gold{background:var(--gold-dim);color:#8B6914;}
+.badge-red{background:var(--red-bg);color:var(--red);}
+.badge-amber{background:var(--amber-bg);color:var(--amber);}
+.badge-navy{background:rgba(13,43,78,.1);color:var(--navy);}
+.badge-blue{background:rgba(24,95,165,.1);color:#185fa5;}
+
+/* ── BUTTONS ── */
+.btn-sm{padding:6px 12px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .13s;letter-spacing:.03em;}
+.btn-sm-primary{background:var(--navy);color:var(--gold);}
+.btn-sm-ghost{background:transparent;color:var(--slate);border:1px solid var(--border);}
+.btn-sm:hover{opacity:.83;}
+
+/* ── WORKFLOW ── */
+.wf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+.wf-card{background:var(--white);border-radius:9px;border:1px solid var(--border);padding:18px;cursor:pointer;transition:all .18s;position:relative;}
+.wf-card:hover{border-color:var(--gold);box-shadow:0 3px 14px rgba(200,169,110,.14);}
+.wf-card.done{border-left:3px solid var(--green);}
+.wf-card.active-wf{border-left:3px solid var(--gold);}
+.wf-card.pending{border-left:3px solid var(--slate-lt);}
+.wf-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold-light);margin-bottom:4px;}
+.wf-title{font-weight:700;font-size:12px;color:var(--navy);margin-bottom:3px;}
+.wf-desc{font-size:10px;color:var(--slate-lt);line-height:1.5;}
+.wf-arrow{position:absolute;top:50%;right:-8px;transform:translateY(-50%);background:var(--gold);color:var(--navy);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;z-index:2;}
+
+/* ── PROP CARDS ── */
+.props-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.prop-card{background:var(--white);border-radius:9px;border:1px solid var(--border);overflow:hidden;transition:box-shadow .18s;}
+.prop-card:hover{box-shadow:0 4px 18px rgba(13,43,78,.08);}
+.prop-img{height:100px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
+.prop-tag{position:absolute;top:8px;right:8px;}
+.prop-body{padding:14px;}
+.prop-address{font-weight:700;font-size:13px;color:var(--navy);}
+.prop-city{font-size:11px;color:var(--slate-lt);}
+.prop-stats{display:flex;gap:12px;margin-top:9px;padding-top:9px;border-top:1px solid var(--cream-dark);}
+.prop-stat{font-size:10px;color:var(--slate-lt);}
+.prop-stat strong{display:block;font-size:13px;font-weight:700;color:var(--navy);}
+.prop-actions{display:flex;gap:7px;margin-top:10px;}
+.prop-id{font-family:monospace;font-size:10px;color:var(--slate-lt);}
+
+/* ── APP ROWS ── */
+.app-row{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--white);border-radius:8px;border:1px solid var(--border);margin-bottom:9px;transition:box-shadow .13s;}
+.app-row:hover{box-shadow:0 2px 10px rgba(13,43,78,.07);}
+.app-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.app-info{flex:1;}
+.app-name{font-weight:700;font-size:13px;color:var(--navy);}
+.app-detail{font-size:10px;color:var(--slate-lt);}
+.app-score{text-align:center;min-width:52px;}
+.score-num{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;}
+.score-lbl{font-size:9px;color:var(--slate-lt);letter-spacing:.07em;text-transform:uppercase;}
+.app-acts{display:flex;gap:6px;flex-shrink:0;}
+
+/* ── SCREENING ── */
+.screen-card{background:var(--white);border-radius:9px;border:1px solid var(--border);padding:18px;margin-bottom:12px;}
+.screen-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.score-box{background:var(--cream);border-radius:7px;padding:11px;text-align:center;}
+.score-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;}
+.score-tag{font-size:9px;color:var(--slate-lt);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+
+/* ── LEASE ── */
+.lease-row{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--white);border-radius:8px;border:1px solid var(--border);margin-bottom:9px;}
+.lease-icon{font-size:20px;flex-shrink:0;}
+.lease-info{flex:1;}
+.lease-name{font-weight:700;font-size:13px;color:var(--navy);}
+.lease-dates{font-size:10px;color:var(--slate-lt);}
+.lease-bar{height:3px;background:var(--cream-dark);border-radius:2px;margin-top:6px;overflow:hidden;}
+.lease-fill{height:100%;background:var(--gold);border-radius:2px;}
+
+/* ── RENT ── */
+.rent-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.rent-card{background:var(--white);border-radius:9px;padding:16px;border:1px solid var(--border);text-align:center;}
+.rent-amount{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;}
+.rent-label{font-size:10px;color:var(--slate-lt);margin-top:3px;text-transform:uppercase;letter-spacing:.07em;}
+.pm-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
+
+/* ── ACCOUNTING ── */
+.acct-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;}
+.acct-card{background:var(--white);border-radius:9px;padding:16px;border:1px solid var(--border);}
+.acct-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-lt);margin-bottom:10px;}
+.acct-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--cream-dark);font-size:12px;}
+.acct-row:last-child{border-bottom:none;font-weight:700;font-size:13px;}
+.acct-in{color:var(--green);}
+.acct-ex{color:var(--red);}
+
+/* ── MAINTENANCE ── */
+.maint-item{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;background:var(--white);border-radius:8px;border:1px solid var(--border);margin-bottom:9px;}
+.maint-icon-box{width:38px;height:38px;border-radius:7px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.maint-body{flex:1;}
+.maint-title{font-weight:600;font-size:13px;color:var(--navy);}
+.maint-meta{font-size:10px;color:var(--slate-lt);margin-top:2px;}
+.maint-right{text-align:right;flex-shrink:0;}
+
+/* ── MESSAGES ── */
+.msg-list{background:var(--white);border-radius:9px;border:1px solid var(--border);overflow:hidden;}
+.msg-item{display:flex;gap:11px;padding:13px 16px;border-bottom:1px solid var(--cream-dark);cursor:pointer;transition:background .13s;}
+.msg-item:hover{background:var(--cream);}
+.msg-item:last-child{border-bottom:none;}
+.msg-item.unread{background:rgba(200,169,110,.04);}
+.msg-av{width:34px;height:34px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.msg-body{flex:1;min-width:0;}
+.msg-name{font-weight:700;font-size:13px;color:var(--navy);display:flex;justify-content:space-between;}
+.msg-preview{font-size:11px;color:var(--slate-lt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.msg-time{font-size:10px;color:var(--slate-lt);}
+.unread-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:7px;flex-shrink:0;}
+
+/* ── SETUP ── */
+.setup-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--white);border-radius:8px;border:1px solid var(--border);margin-bottom:8px;}
+.setup-check{width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.check-done{background:var(--green-bg);color:var(--green);border:1.5px solid var(--green);}
+.check-todo{background:var(--cream);color:var(--slate-lt);border:1.5px dashed var(--border);}
+.setup-label{font-size:13px;font-weight:600;color:var(--navy);flex:1;}
+.setup-sub{font-size:10px;color:var(--slate-lt);}
+
+/* ── STRIPE SECTION ── */
+.stripe-panel{background:var(--white);border-radius:9px;border:1px solid var(--border);padding:20px;margin-bottom:18px;}
+.stripe-section-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-lt);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--cream-dark);}
+.stripe-row{display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--cream-dark);}
+.stripe-row:last-child{border-bottom:none;}
+.stripe-label{font-size:12px;font-weight:600;color:var(--navy);min-width:220px;flex-shrink:0;}
+.stripe-value{font-size:12px;color:var(--slate);flex:1;}
+.stripe-value a{color:var(--navy-light);text-decoration:none;}
+.stripe-value a:hover{text-decoration:underline;}
+.stripe-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.stripe-note{font-size:10px;color:var(--slate-lt);margin-top:3px;}
+.policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* ── SENDGRID ── */
+.sg-panel{background:var(--white);border-radius:9px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.sg-header{background:var(--navy);color:var(--gold);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.sg-header-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;}
+.sg-body{padding:18px;}
+.sg-row{display:flex;gap:10px;margin-bottom:11px;}
+.sg-group{flex:1;}
+.sg-group label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--slate);display:block;margin-bottom:4px;}
+.sg-group input,.sg-group select,.sg-group textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif;font-size:12px;color:var(--navy);background:var(--white);}
+.sg-group input:focus,.sg-group select:focus{outline:none;border-color:var(--gold);}
+.sg-status{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:7px;font-size:12px;margin-top:4px;}
+.sg-status.ok{background:var(--green-bg);color:var(--green);}
+.sg-status.warn{background:var(--amber-bg);color:var(--amber);}
+
+/* ── TT EMBED ── */
+.tt-embed-wrap{background:var(--white);border-radius:9px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.tt-embed-hd{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.tt-embed-hd-title{font-weight:700;font-size:13px;color:var(--navy);}
+iframe.tt-embed{width:100%;height:1240px;border:none;display:block;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,78,.5);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:11px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 18px 55px rgba(0,0,0,.22);}
+.modal-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--navy);}
+.modal-close{background:none;border:none;font-size:19px;cursor:pointer;color:var(--slate-lt);}
+.modal-body{padding:20px 22px;}
+.fm-row{display:flex;gap:10px;margin-bottom:12px;}
+.fm-group{flex:1;display:flex;flex-direction:column;}
+.fm-group label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);margin-bottom:4px;}
+.fm-group input,.fm-group select,.fm-group textarea{padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif;font-size:12px;color:var(--navy);background:var(--white);}
+.fm-group input:focus,.fm-group select:focus{outline:none;border-color:var(--gold);}
+.fm-actions{display:flex;gap:9px;margin-top:6px;}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:var(--gold);border:none;padding:10px 26px;border-radius:6px;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .18s;}
+.btn-primary:hover{opacity:.88;}
+.btn-cancel{background:transparent;color:var(--slate);border:1px solid var(--border);padding:9px 18px;border-radius:6px;font-size:12px;cursor:pointer;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:var(--gold);padding:11px 18px;border-radius:7px;font-size:12px;font-weight:600;z-index:400;transform:translateY(70px);opacity:0;transition:all .28s;border:1px solid var(--gold-dim);max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ── NOTICE BOX ── */
+.notice{border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;}
+.notice-gold{background:var(--gold-bg);border:1px solid rgba(200,169,110,.3);color:var(--navy);}
+.notice-green{background:var(--green-bg);border:1px solid rgba(26,122,74,.2);color:var(--green);}
+.notice-amber{background:var(--amber-bg);border:1px solid rgba(184,134,11,.2);color:var(--amber);}
+
+/* ── TRACKING ID BADGE ── */
+.trk{font-family:'Courier New',monospace;font-size:10px;background:rgba(13,43,78,.07);color:var(--slate);padding:2px 6px;border-radius:4px;display:inline-block;}
+
+/* ── QUICK LINKS ── */
+.qlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{margin-top:5px;}
+.prog-track{height:4px;background:var(--cream-dark);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;background:var(--gold);}
+
+@media(max-width:900px){
+  .sidebar{width:56px;min-width:56px;}
+  .sidebar .logo-mark span,.logo-sub,.nav-item>span:not(.nav-icon),.sb-section,.owner-name,.owner-role,.nav-badge{display:none;}
+  .nav-item{justify-content:center;padding:11px;}
+  .main{margin-left:56px;}
+  .stats-grid,.wf-grid,.props-grid,.rent-summary,.acct-grid,.policy-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:640px){
+  .stats-grid,.wf-grid,.props-grid,.rent-summary,.acct-grid,.policy-grid,.score-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mark">VIVIA <span>Rentals</span></div>
+    <div class="logo-sub">Owner Dashboard</div>
+  </div>
+
+  <div class="sb-section">Overview</div>
+  <button class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">🏠</span><span>Dashboard</span></button>
+  <button class="nav-item" onclick="nav('properties',this)"><span class="nav-icon">🏢</span><span>Properties</span></button>
+
+  <div class="sb-section">Workflow</div>
+  <button class="nav-item" onclick="nav('listings',this)"><span class="nav-icon">📢</span><span>Listings</span></button>
+  <button class="nav-item" onclick="nav('applications',this)"><span class="nav-icon">📋</span><span>Applications</span><span class="nav-badge">3</span></button>
+  <button class="nav-item" onclick="nav('screening',this)"><span class="nav-icon">🔍</span><span>Screening</span></button>
+  <button class="nav-item" onclick="nav('leases',this)"><span class="nav-icon">📄</span><span>Leases</span></button>
+
+  <div class="sb-section">Financials</div>
+  <button class="nav-item" onclick="nav('rent',this)"><span class="nav-icon">💰</span><span>Rent Collection</span></button>
+  <button class="nav-item" onclick="nav('accounting',this)"><span class="nav-icon">📊</span><span>Accounting</span></button>
+
+  <div class="sb-section">Operations</div>
+  <button class="nav-item" onclick="nav('maintenance',this)"><span class="nav-icon">🔧</span><span>Maintenance</span><span class="nav-badge">2</span></button>
+  <button class="nav-item" onclick="nav('messages',this)"><span class="nav-icon">💬</span><span>Messages</span><span class="nav-badge">4</span></button>
+
+  <div class="sb-section">System</div>
+  <button class="nav-item" onclick="nav('payments',this)"><span class="nav-icon">💳</span><span>Stripe & Policies</span></button>
+  <button class="nav-item" onclick="nav('email',this)"><span class="nav-icon">✉️</span><span>Email / SendGrid</span></button>
+  <button class="nav-item" onclick="nav('setup',this)"><span class="nav-icon">⚙️</span><span>Setup & Config</span></button>
+
+  <div class="sb-footer">
+    <div class="owner-chip">
+      <div class="owner-av">K</div>
+      <div>
+        <div class="owner-name">Kristin Bittner</div>
+        <div class="owner-role">Property Owner · VIVIA</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <span style="font-size:11px;color:var(--slate-lt);"><span class="live-dot"></span>Live · TurboTenant Synced</span>
+      <button class="topbar-btn ghost" onclick="openModal('addPropModal')">+ Add Property</button>
+      <button class="topbar-btn" onclick="openModal('inviteModal')">Invite Tenant</button>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Properties</div>
+          <div class="stat-value">8</div>
+          <div class="stat-meta">GA · IL · TX · NC markets</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Monthly Rent Roll</div>
+          <div class="stat-value">$12,875</div>
+          <div class="stat-meta stat-up">↑ 94% collected</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Open Applications</div>
+          <div class="stat-value">3</div>
+          <div class="stat-meta stat-amber">2 pending screening</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Maintenance</div>
+          <div class="stat-value">2</div>
+          <div class="stat-meta stat-down">Open work orders</div>
+        </div>
+      </div>
+
+      <div class="section-hd"><div class="section-title">Full Rental Workflow</div></div>
+      <div class="wf-grid" style="margin-bottom:22px;">
+        <div class="wf-card done" onclick="nav('listings',null)">
+          <div class="wf-num">01</div>
+          <div class="wf-title">📢 List Property</div>
+          <div class="wf-desc">Syndicates to Zillow, Apartments.com, Realtor.com, Trulia, Redfin, and 17 more from one listing.</div>
+          <div class="wf-arrow">→</div>
+        </div>
+        <div class="wf-card active-wf" onclick="nav('applications',null)">
+          <div class="wf-num">02</div>
+          <div class="wf-title">📋 Collect Applications</div>
+          <div class="wf-desc">Digital $75 application fee. Apply: <a href="https://vivia-property.zite.so/" target="_blank" style="color:var(--navy-light);">vivia-property.zite.so</a> · Auto tracking ID generated.</div>
+          <div class="wf-arrow">→</div>
+        </div>
+        <div class="wf-card pending" onclick="nav('screening',null)">
+          <div class="wf-num">03</div>
+          <div class="wf-title">🔍 Screen Tenants</div>
+          <div class="wf-desc">Credit, background, eviction via Rent Butter. Income verification. Results in 24–48 hrs.</div>
+          <div class="wf-arrow">→</div>
+        </div>
+        <div class="wf-card pending" onclick="nav('leases',null)">
+          <div class="wf-num">04</div>
+          <div class="wf-title">📄 Sign Lease</div>
+          <div class="wf-desc">State-specific lease builder with e-sign. AI Audit available. Store in TurboTenant.</div>
+          <div class="wf-arrow">→</div>
+        </div>
+        <div class="wf-card pending" onclick="nav('rent',null)">
+          <div class="wf-num">05</div>
+          <div class="wf-title">💰 Collect Rent</div>
+          <div class="wf-desc">ACH, Zelle, Cash App, Apple Pay, Chime, USDC, PayPal, store deposit. Auto late fees.</div>
+          <div class="wf-arrow">→</div>
+        </div>
+        <div class="wf-card pending" onclick="nav('maintenance',null)">
+          <div class="wf-num">06</div>
+          <div class="wf-title">🔧 Manage Property</div>
+          <div class="wf-desc">Maintenance requests, vendor routing via Thumbtack & Lula. Photo condition reports.</div>
+        </div>
+      </div>
+
+      <div class="section-hd">
+        <div class="section-title">Recent Activity</div>
+        <button class="section-link" onclick="nav('applications',null)">View all →</button>
+      </div>
+      <table class="data-table" style="margin-bottom:22px;">
+        <thead><tr><th>Applicant / Tenant</th><th>Property</th><th>Type</th><th>Amount</th><th>Status</th><th>Tracking ID</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Marcus Wilson</strong></td><td>10115 S California, Chicago IL</td><td>App Fee</td><td>$75</td><td><span class="badge badge-green">✓ Paid</span></td><td><span class="trk">TRK-2402148-MW7821-60643</span></td><td>Jun 6</td></tr>
+          <tr><td><strong>Tamara Brooks</strong></td><td>1920 Cherry Bark Ln, Forney TX</td><td>Security Deposit</td><td>$1,920</td><td><span class="badge badge-amber">⏳ Pending</span></td><td><span class="trk">TRK-2402148-TB4932-75126</span></td><td>Jun 5</td></tr>
+          <tr><td><strong>James O'Neal</strong></td><td>7505 Emerson St, Morton Grove IL</td><td>June Rent</td><td>$1,300</td><td><span class="badge badge-green">✓ Paid</span></td><td><span class="trk">TRK-267366-JO3344-60053</span></td><td>Jun 1</td></tr>
+          <tr><td><strong>Destiny Carter</strong></td><td>606 Cochise Cir, Bolingbrook IL</td><td>June Rent</td><td>$1,150</td><td><span class="badge badge-red">⚠ Late</span></td><td><span class="trk">TRK-COCHISE-DC5501-60440</span></td><td>Jun 1</td></tr>
+          <tr><td><strong>Caroline Moore</strong></td><td>6103 Oakwood Cir, Covington GA</td><td>June Rent</td><td>$900</td><td><span class="badge badge-green">✓ Paid</span></td><td><span class="trk">TRK-2568463-CM9001-30014</span></td><td>Jun 1</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tt-embed-wrap">
+        <div class="tt-embed-hd">
+          <div class="tt-embed-hd-title">📡 Live TurboTenant Property Listings</div>
+          <a href="https://rental.turbotenant.com/owners" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Open TurboTenant →</a>
+        </div>
+        <iframe class="tt-embed" src="https://rental.turbotenant.com/embedpropertylist.html#/QmFzaWNVc2VyUHJvZmlsZToxMTQzMjE0" loading="lazy" allowfullscreen title="VIVIA Property Listings"></iframe>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ PROPERTIES ═══════════════════ -->
+    <div class="view" id="view-properties">
+      <div class="section-hd"><div class="section-title">All Properties</div><button class="topbar-btn" onclick="openModal('addPropModal')">+ Add Property</button></div>
+      <div class="props-grid">
+        <div class="prop-card">
+          <div class="prop-img">🏙️<div class="prop-tag"><span class="badge badge-green">Occupied</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">10115 S California Ave</div>
+            <div class="prop-city">Chicago, IL 60643</div>
+            <div class="prop-id">TT ID: 2402148</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>$2,905</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>3 bd</strong>Bedrooms</div>
+              <div class="prop-stat"><strong>Active</strong>Lease</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="toast('Opening TurboTenant listing…')">View Listing</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('rent',null)">Collect Rent</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="prop-img">🌳<div class="prop-tag"><span class="badge badge-green">Occupied</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">7505 Emerson St</div>
+            <div class="prop-city">Morton Grove, IL 60053</div>
+            <div class="prop-id">TT ID: 267366p</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>$1,300</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>2 bd</strong>Bedrooms</div>
+              <div class="prop-stat"><strong>Active</strong>Lease</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="toast('Opening listing…')">View Listing</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('maintenance',null)">Maintenance</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="prop-img">🏡<div class="prop-tag"><span class="badge badge-amber">Vacant</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">606 Cochise Cir</div>
+            <div class="prop-city">Bolingbrook, IL 60440</div>
+            <div class="prop-id">TT ID: COCHISE-001</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>$1,150</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>2 bd</strong>Bedrooms</div>
+              <div class="prop-stat"><strong>Vacant</strong>Status</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="nav('listings',null)">List Now</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('applications',null)">Applications</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="prop-img">🤠<div class="prop-tag"><span class="badge badge-green">Occupied</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">1920 Cherry Bark Ln #300</div>
+            <div class="prop-city">Forney, TX 75126</div>
+            <div class="prop-id">TT ID: 2402148-TX</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>$1,920</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>3 bd</strong>Bedrooms</div>
+              <div class="prop-stat"><strong>Pending</strong>Deposit</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="toast('Opening listing…')">View Listing</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('leases',null)">Lease</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="prop-img">🌲<div class="prop-tag"><span class="badge badge-green">Occupied</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">6103 Oakwood Circle</div>
+            <div class="prop-city">Covington, GA 30014</div>
+            <div class="prop-id">TT ID: 2568463</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>$900</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>3 bd / 2 ba</strong>Layout</div>
+              <div class="prop-stat"><strong>Rent-to-Own</strong>Terms</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="window.open('https://rental.turbotenant.com/properties/2568463','_blank')">View on TurboTenant</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('rent',null)">Collect Rent</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="prop-img">🌴<div class="prop-tag"><span class="badge badge-blue">Coming Soon</span></div></div>
+          <div class="prop-body">
+            <div class="prop-address">NC Market Property</div>
+            <div class="prop-city">North Carolina (Onboarding)</div>
+            <div class="prop-id">TT ID: Pending</div>
+            <div class="prop-stats">
+              <div class="prop-stat"><strong>TBD</strong>Rent/mo</div>
+              <div class="prop-stat"><strong>—</strong>Bedrooms</div>
+              <div class="prop-stat"><strong>Setup</strong>Status</div>
+            </div>
+            <div class="prop-actions">
+              <button class="btn-sm btn-sm-primary" onclick="openModal('addPropModal')">Complete Setup</button>
+              <button class="btn-sm btn-sm-ghost" onclick="nav('setup',null)">Config</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ LISTINGS ═══════════════════ -->
+    <div class="view" id="view-listings">
+      <div class="section-hd"><div class="section-title">Active Listings</div><button class="topbar-btn" onclick="toast('Opening TurboTenant listing wizard…')">+ New Listing</button></div>
+      <div class="notice notice-gold">📢 Listings auto-syndicate to <strong>Zillow · Apartments.com · Realtor.com · Trulia · Redfin</strong> and 17 more sites. <a href="https://turbotenant.com/r/T3duZXI6MTEwNjUwMg==" target="_blank" style="color:var(--gold);font-weight:700;">Open TurboTenant Dashboard →</a></div>
+      <table class="data-table" style="margin-bottom:18px;">
+        <thead><tr><th>Property</th><th>Rent</th><th>Listed</th><th>Views</th><th>Inquiries</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><strong>10115 S California, Chicago IL</strong></td><td>$2,905/mo</td><td>May 15, 2026</td><td>847</td><td>12</td><td><span class="badge badge-green">Live</span></td><td><button class="btn-sm btn-sm-ghost" onclick="toast('Opening listing editor…')">Edit</button></td></tr>
+          <tr><td><strong>6103 Oakwood Cir, Covington GA</strong></td><td>$900/mo</td><td>Jan 6, 2026</td><td>1,102</td><td>9</td><td><span class="badge badge-green">Live</span></td><td><button class="btn-sm btn-sm-ghost" onclick="window.open('https://rental.turbotenant.com/properties/2568463','_blank')">View</button></td></tr>
+          <tr><td><strong>606 Cochise Cir, Bolingbrook IL</strong></td><td>$1,150/mo</td><td>Jun 1, 2026</td><td>223</td><td>5</td><td><span class="badge badge-amber">Draft</span></td><td><button class="btn-sm btn-sm-primary" onclick="toast('Publishing listing…')">Publish</button></td></tr>
+          <tr><td><strong>1920 Cherry Bark Ln, Forney TX</strong></td><td>$1,920/mo</td><td>Apr 3, 2026</td><td>1,204</td><td>28</td><td><span class="badge badge-navy">Leased</span></td><td><button class="btn-sm btn-sm-ghost" onclick="toast('Relisting…')">Relist</button></td></tr>
+          <tr><td><strong>7505 Emerson St, Morton Grove IL</strong></td><td>$1,300/mo</td><td>Jan 1, 2026</td><td>680</td><td>7</td><td><span class="badge badge-navy">Leased</span></td><td><button class="btn-sm btn-sm-ghost" onclick="toast('Relisting…')">Relist</button></td></tr>
+        </tbody>
+      </table>
+      <div class="section-title" style="margin-bottom:11px;">Showing Schedule</div>
+      <table class="data-table">
+        <thead><tr><th>Prospect</th><th>Property</th><th>Date / Time</th><th>Method</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Daria Johnson</td><td>606 Cochise Cir</td><td>Jun 10 @ 2:00 PM</td><td>In-person</td><td><span class="badge badge-amber">Scheduled</span></td><td><button class="btn-sm btn-sm-ghost" onclick="toast('Reminder sent to Daria…')">Remind</button></td></tr>
+          <tr><td>Terrence Moore</td><td>10115 S California</td><td>Jun 12 @ 11:00 AM</td><td>Self-show</td><td><span class="badge badge-amber">Scheduled</span></td><td><button class="btn-sm btn-sm-ghost" onclick="toast('Reminder sent to Terrence…')">Remind</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══════════════════ APPLICATIONS ═══════════════════ -->
+    <div class="view" id="view-applications">
+      <div class="section-hd">
+        <div class="section-title">Rental Applications</div>
+        <a href="https://vivia-property.zite.so/"  target="_blank" class="topbar-btn" style="text-decoration:none;display:inline-block;padding:7px 16px;font-size:12px;">VIVIA Rentals →</a>
+      </div>
+      <div class="notice notice-gold">Application form: <strong><a href="https://vivia-property.zite.so/" target="_blank" style="color:var(--navy);">VIVIA Rentals | Available Rental Properties &amp; Online Applications</a></strong> · $75 fee · 8 payment methods · Tracking ID auto-generated on submit</div>
+      <div class="app-row">
+        <div class="app-avatar">MW</div>
+        <div class="app-info">
+          <div class="app-name">Marcus Wilson</div>
+          <div class="app-detail">10115 S California, Chicago IL 60643 · Applied Jun 6 · ACH</div>
+          <div style="margin-top:4px;"><span class="trk">TRK-2402148-MW7821-60643</span></div>
+        </div>
+        <div class="app-score"><div class="score-num" style="color:var(--green);">720</div><div class="score-lbl">Credit</div></div>
+        <div class="app-acts">
+          <button class="btn-sm btn-sm-primary" onclick="nav('screening',null)">Screen</button>
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Lease invite sent to Marcus Wilson…')">Approve</button>
+        </div>
+        <span class="badge badge-gold" style="flex-shrink:0;">New</span>
+      </div>
+      <div class="app-row">
+        <div class="app-avatar">TB</div>
+        <div class="app-info">
+          <div class="app-name">Tamara Brooks</div>
+          <div class="app-detail">1920 Cherry Bark Ln, Forney TX 75126 · Applied Jun 5 · Zelle</div>
+          <div style="margin-top:4px;"><span class="trk">TRK-2402148-TB4932-75126</span></div>
+        </div>
+        <div class="app-score"><div class="score-num" style="color:var(--amber);">668</div><div class="score-lbl">Credit</div></div>
+        <div class="app-acts">
+          <button class="btn-sm btn-sm-primary" onclick="nav('screening',null)">Screen</button>
+          <button class="btn-sm btn-sm-ghost">Review</button>
+        </div>
+        <span class="badge badge-amber" style="flex-shrink:0;">Screening</span>
+      </div>
+      <div class="app-row">
+        <div class="app-avatar">DC</div>
+        <div class="app-info">
+          <div class="app-name">Destiny Carter</div>
+          <div class="app-detail">606 Cochise Cir, Bolingbrook IL 60440 · Applied Jun 3 · Cash App</div>
+          <div style="margin-top:4px;"><span class="trk">TRK-COCHISE-DC1120-60440</span></div>
+        </div>
+        <div class="app-score"><div class="score-num" style="color:var(--red);">601</div><div class="score-lbl">Credit</div></div>
+        <div class="app-acts">
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Denial notice sent to Destiny Carter…')">Deny</button>
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Requesting additional documents…')">Request Info</button>
+        </div>
+        <span class="badge badge-red" style="flex-shrink:0;">Action Needed</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCREENING ═══════════════════ -->
+    <div class="view" id="view-screening">
+      <div class="section-hd"><div class="section-title">Tenant Screening</div></div>
+      <div class="notice notice-gold">Powered by Rent Butter · Credit, background, and eviction checks · Reports in 24–48 hrs · $35 fee paid by applicant</div>
+      <div class="screen-card">
+        <div class="screen-hd">
+          <div>
+            <div style="font-weight:700;font-size:14px;">Marcus Wilson</div>
+            <div style="font-size:11px;color:var(--slate-lt);">10115 S California, Chicago IL · $35 screening fee paid · TRK-2402148-MW7821-60643</div>
+          </div>
+          <span class="badge badge-green">Report Ready</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-box"><div class="score-val" style="color:var(--green);">720</div><div class="score-tag">Credit Score</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--green);">✓</div><div class="score-tag">No Evictions</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--green);">Clear</div><div class="score-tag">Background</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--green);">✓</div><div class="score-tag">Income Verified</div></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:9px;">
+          <button class="btn-sm btn-sm-primary" onclick="toast('Lease sent to Marcus Wilson…')">Send Lease</button>
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Downloading full screening report…')">Download Report</button>
+        </div>
+      </div>
+      <div class="screen-card">
+        <div class="screen-hd">
+          <div>
+            <div style="font-weight:700;font-size:14px;">Tamara Brooks</div>
+            <div style="font-size:11px;color:var(--slate-lt);">1920 Cherry Bark Ln, Forney TX · Screening in progress · TRK-2402148-TB4932-75126</div>
+          </div>
+          <span class="badge badge-amber">In Progress</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-box"><div class="score-val" style="color:var(--amber);">668</div><div class="score-tag">Credit Score</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--amber);">Pending</div><div class="score-tag">Background</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--amber);">Pending</div><div class="score-tag">Evictions</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--amber);">Pending</div><div class="score-tag">Income</div></div>
+        </div>
+      </div>
+      <div class="screen-card">
+        <div class="screen-hd">
+          <div>
+            <div style="font-weight:700;font-size:14px;">Destiny Carter</div>
+            <div style="font-size:11px;color:var(--slate-lt);">606 Cochise Cir, Bolingbrook IL · TRK-COCHISE-DC1120-60440</div>
+          </div>
+          <span class="badge badge-red">Review Required</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-box"><div class="score-val" style="color:var(--red);">601</div><div class="score-tag">Credit Score</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--green);">✓</div><div class="score-tag">No Evictions</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--amber);">1 Item</div><div class="score-tag">Background</div></div>
+          <div class="score-box"><div class="score-val" style="color:var(--red);">⚠</div><div class="score-tag">Income Gap</div></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:9px;">
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Denial notice sent to Destiny Carter…')">Send Denial</button>
+          <button class="btn-sm btn-sm-ghost" onclick="toast('Requesting additional info…')">Request More Info</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ LEASES ═══════════════════ -->
+    <div class="view" id="view-leases">
+      <div class="section-hd"><div class="section-title">Lease Agreements</div><button class="topbar-btn" onclick="toast('Opening TurboTenant lease builder…')">+ New Lease</button></div>
+      <div class="notice notice-gold">State-specific leases via TurboTenant · E-sign included · AI Audit checks compliance, fair housing, deposit laws · Results in ~15 sec</div>
+      <div class="lease-row">
+        <div class="lease-icon">📄</div>
+        <div class="lease-info">
+          <div class="lease-name">James O'Neal — 7505 Emerson St, Morton Grove IL 60053</div>
+          <div class="lease-dates">Jan 1, 2026 → Dec 31, 2026 · 12-month · $1,300/mo · ACH</div>
+          <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:45%;"></div></div></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:14px;">
+          <span class="badge badge-green">Active · 45%</span>
+          <div style="margin-top:8px;display:flex;gap:6px;">
+            <button class="btn-sm btn-sm-ghost" onclick="toast('Opening lease PDF…')">View</button>
+            <button class="btn-sm btn-sm-primary" onclick="toast('Running AI lease audit — results in ~15 seconds…')">AI Audit</button>
+          </div>
+        </div>
+      </div>
+      <div class="lease-row">
+        <div class="lease-icon">📄</div>
+        <div class="lease-info">
+          <div class="lease-name">Tenant — 1920 Cherry Bark Ln #300, Forney TX 75126</div>
+          <div class="lease-dates">Mar 1, 2026 → Feb 28, 2027 · 12-month · $1,920/mo · Zelle</div>
+          <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:30%;"></div></div></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:14px;">
+          <span class="badge badge-green">Active · 30%</span>
+          <div style="margin-top:8px;display:flex;gap:6px;">
+            <button class="btn-sm btn-sm-ghost" onclick="toast('Opening lease PDF…')">View</button>
+            <button class="btn-sm btn-sm-primary" onclick="toast('Running AI lease audit…')">AI Audit</button>
+          </div>
+        </div>
+      </div>
+      <div class="lease-row">
+        <div class="lease-icon">📄</div>
+        <div class="lease-info">
+          <div class="lease-name">Caroline Moore — 6103 Oakwood Circle, Covington GA 30014</div>
+          <div class="lease-dates">May 25, 2026 → May 24, 2027 · Rent-to-Own · $900/mo · ACH</div>
+          <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:3%;"></div></div></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:14px;">
+          <span class="badge badge-green">Active</span>
+          <div style="margin-top:8px;display:flex;gap:6px;">
+            <button class="btn-sm btn-sm-ghost" onclick="window.open('https://rental.turbotenant.com/properties/2568463','_blank')">View Listing</button>
+            <button class="btn-sm btn-sm-primary" onclick="toast('Running AI audit on GA lease…')">AI Audit</button>
+          </div>
+        </div>
+      </div>
+      <div class="lease-row">
+        <div class="lease-icon">✏️</div>
+        <div class="lease-info">
+          <div class="lease-name">Marcus Wilson — 10115 S California Ave, Chicago IL 60643</div>
+          <div class="lease-dates">Draft · Pending e-signature · $2,905/mo · ACH</div>
+          <div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:5%;background:var(--amber);"></div></div></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:14px;">
+          <span class="badge badge-amber">Pending E-Sign</span>
+          <div style="margin-top:8px;">
+            <button class="btn-sm btn-sm-primary" onclick="toast('E-sign request sent to Marcus Wilson…')">Send for Signature</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ RENT ═══════════════════ -->
+    <div class="view" id="view-rent">
+      <div class="section-hd"><div class="section-title">Rent Collection</div><button class="topbar-btn" onclick="toast('Opening charge builder…')">+ Add Charge</button></div>
+      <div class="rent-summary">
+        <div class="rent-card"><div class="rent-amount" style="color:var(--green);">$7,025</div><div class="rent-label">Collected · June</div></div>
+        <div class="rent-card"><div class="rent-amount" style="color:var(--amber);">$4,700</div><div class="rent-label">Pending</div></div>
+        <div class="rent-card"><div class="rent-amount" style="color:var(--red);">$1,150</div><div class="rent-label">Late / Overdue</div></div>
+      </div>
+      <table class="data-table" style="margin-bottom:18px;">
+        <thead><tr><th>Tenant</th><th>Property</th><th>Method</th><th>Amount</th><th>Due</th><th>Status</th><th>Tracking ID</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Caroline Moore</strong></td><td>6103 Oakwood Cir, Covington GA</td><td>ACH</td><td>$900</td><td>Jun 1</td><td><span class="badge badge-green">Paid</span></td><td><span class="trk">TRK-2568463-CM9001-30014</span></td></tr>
+          <tr><td><strong>James O'Neal</strong></td><td>7505 Emerson, Morton Grove IL</td><td>ACH</td><td>$1,300</td><td>Jun 1</td><td><span class="badge badge-green">Paid</span></td><td><span class="trk">TRK-267366-JO3344-60053</span></td></tr>
+          <tr><td><strong>Tenant</strong></td><td>10115 S California, Chicago IL</td><td>ACH</td><td>$2,905</td><td>Jun 1</td><td><span class="badge badge-green">Paid</span></td><td><span class="trk">TRK-2402148-XX8801-60643</span></td></tr>
+          <tr><td><strong>Tenant</strong></td><td>1920 Cherry Bark Ln, Forney TX</td><td>Zelle</td><td>$1,920</td><td>Jun 1</td><td><span class="badge badge-amber">Pending</span></td><td><span class="trk">TRK-2402148-XX9901-75126</span></td></tr>
+          <tr><td><strong>Destiny Carter</strong></td><td>606 Cochise Cir, Bolingbrook IL</td><td>Cash App</td><td>$1,150</td><td>Jun 1</td><td><span class="badge badge-red">Late</span></td><td><span class="trk">TRK-COCHISE-DC5501-60440</span></td></tr>
+          <tr><td><strong>Marcus Wilson</strong></td><td>10115 S California, Chicago IL</td><td>ACH</td><td>$2,905</td><td>Jul 1</td><td><span class="badge badge-navy">Upcoming</span></td><td><span class="trk">—</span></td></tr>
+        </tbody>
+      </table>
+      <div class="section-title" style="margin-bottom:10px;">Accepted Payment Methods</div>
+      <div class="pm-grid">
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">💜 Zelle</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">🍎 Apple Pay</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">💚 Chime</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">🅿️ PayPal</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">💵 Cash App</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">🏪 Store Deposit</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">🏦 ACH Transfer</span>
+        <span class="badge badge-navy" style="font-size:11px;padding:6px 12px;">🔵 USDC</span>
+      </div>
+      <div style="margin-top:16px;padding:12px 16px;background:var(--white);border:1px solid var(--border);border-radius:8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--slate-lt);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Stripe Integration</div>
+        <div style="display:flex;gap:20px;font-size:12px;">
+          <div><span style="color:var(--slate-lt);">Account:</span> <span class="trk">acct_1SunFm697drovv2I</span></div>
+          <div><span style="color:var(--slate-lt);">Status:</span> <span class="badge badge-green">Live ✓</span></div>
+          <div><span style="color:var(--slate-lt);">Mode:</span> <span class="badge badge-navy">Flexible</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ ACCOUNTING ═══════════════════ -->
+    <div class="view" id="view-accounting">
+      <div class="section-hd"><div class="section-title">Rental Accounting</div><button class="topbar-btn ghost" onclick="toast('Exporting tax report…')">Export for Taxes</button></div>
+      <div class="acct-grid">
+        <div class="acct-card">
+          <div class="acct-title">Income · June 2026</div>
+          <div class="acct-row"><span>10115 S California, Chicago</span><span class="acct-in">+$2,905</span></div>
+          <div class="acct-row"><span>7505 Emerson St, Morton Grove</span><span class="acct-in">+$1,300</span></div>
+          <div class="acct-row"><span>1920 Cherry Bark Ln, Forney TX</span><span class="acct-in">+$1,920</span></div>
+          <div class="acct-row"><span>6103 Oakwood Cir, Covington GA</span><span class="acct-in">+$900</span></div>
+          <div class="acct-row"><span>Application Fees (3 × $75)</span><span class="acct-in">+$225</span></div>
+          <div class="acct-row"><span><strong>Total Income</strong></span><span class="acct-in"><strong>+$7,250</strong></span></div>
+        </div>
+        <div class="acct-card">
+          <div class="acct-title">Expenses · June 2026</div>
+          <div class="acct-row"><span>Maintenance — Emerson St</span><span class="acct-ex">−$320</span></div>
+          <div class="acct-row"><span>Property Mgmt Fee (10%)</span><span class="acct-ex">−$725</span></div>
+          <div class="acct-row"><span>Insurance — California Ave</span><span class="acct-ex">−$180</span></div>
+          <div class="acct-row"><span>TurboTenant Premium</span><span class="acct-ex">−$149</span></div>
+          <div class="acct-row"><span>Stripe Processing Fees</span><span class="acct-ex">−$82</span></div>
+          <div class="acct-row"><span>SendGrid Pro Plan</span><span class="acct-ex">−$89</span></div>
+          <div class="acct-row"><span><strong>Total Expenses</strong></span><span class="acct-ex"><strong>−$1,545</strong></span></div>
+        </div>
+      </div>
+      <div class="stat-card" style="max-width:300px;">
+        <div class="stat-label">Net Operating Income</div>
+        <div class="stat-value" style="color:var(--green);">$5,705</div>
+        <div class="stat-meta">June 2026 · After all expenses</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ MAINTENANCE ═══════════════════ -->
+    <div class="view" id="view-maintenance">
+      <div class="section-hd"><div class="section-title">Maintenance Requests</div><button class="topbar-btn" onclick="toast('Opening work order form…')">+ New Work Order</button></div>
+      <div class="notice notice-gold">Vendor routing via <strong>Thumbtack</strong> and <strong>Lula</strong> (Maintenance Plus). Available in 30+ markets. Tenants submit via TurboTenant tenant portal.</div>
+      <div class="maint-item">
+        <div class="maint-icon-box">🚿</div>
+        <div class="maint-body">
+          <div class="maint-title">Leaking faucet – master bathroom</div>
+          <div class="maint-meta">7505 Emerson St, Morton Grove IL · Submitted by James O'Neal · Jun 4, 2026</div>
+        </div>
+        <div class="maint-right">
+          <span class="badge badge-red">Urgent</span>
+          <div style="margin-top:7px;"><button class="btn-sm btn-sm-primary" onclick="toast('Assigning vendor via Thumbtack…')">Assign Vendor</button></div>
+        </div>
+      </div>
+      <div class="maint-item">
+        <div class="maint-icon-box">❄️</div>
+        <div class="maint-body">
+          <div class="maint-title">HVAC not cooling properly</div>
+          <div class="maint-meta">1920 Cherry Bark Ln, Forney TX · Submitted Jun 2, 2026 · Lula dispatched</div>
+        </div>
+        <div class="maint-right">
+          <span class="badge badge-amber">In Progress</span>
+          <div style="margin-top:7px;"><button class="btn-sm btn-sm-ghost" onclick="toast('Viewing Lula work order…')">View Order</button></div>
+        </div>
+      </div>
+      <div class="maint-item">
+        <div class="maint-icon-box">💡</div>
+        <div class="maint-body">
+          <div class="maint-title">Exterior light replacement</div>
+          <div class="maint-meta">10115 S California, Chicago IL · Completed May 28, 2026</div>
+        </div>
+        <div class="maint-right">
+          <span class="badge badge-green">Resolved</span>
+        </div>
+      </div>
+      <div class="maint-item">
+        <div class="maint-icon-box">🔒</div>
+        <div class="maint-body">
+          <div class="maint-title">Front door lock replacement</div>
+          <div class="maint-meta">6103 Oakwood Cir, Covington GA · Completed Jun 1, 2026</div>
+        </div>
+        <div class="maint-right">
+          <span class="badge badge-green">Resolved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ MESSAGES ═══════════════════ -->
+    <div class="view" id="view-messages">
+      <div class="section-hd"><div class="section-title">Messages</div><button class="topbar-btn" onclick="toast('Opening message composer…')">+ New Message</button></div>
+      <div class="msg-list">
+        <div class="msg-item unread">
+          <div class="msg-av">JO</div>
+          <div class="msg-body">
+            <div class="msg-name"><span>James O'Neal</span><span class="msg-time">2h ago</span></div>
+            <div class="msg-preview">Hey Kristin, just checking on the faucet repair timeline — has a plumber been scheduled yet?</div>
+          </div>
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-item unread">
+          <div class="msg-av">MW</div>
+          <div class="msg-body">
+            <div class="msg-name"><span>Marcus Wilson</span><span class="msg-time">5h ago</span></div>
+            <div class="msg-preview">I received the lease, reviewing now. Should have it signed back by end of day tomorrow.</div>
+          </div>
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-item unread">
+          <div class="msg-av">TB</div>
+          <div class="msg-body">
+            <div class="msg-name"><span>Tamara Brooks</span><span class="msg-time">Yesterday</span></div>
+            <div class="msg-preview">Hi, I completed the screening application. Do you need additional income verification docs?</div>
+          </div>
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-item">
+          <div class="msg-av">DC</div>
+          <div class="msg-body">
+            <div class="msg-name"><span>Destiny Carter</span><span class="msg-time">Jun 3</span></div>
+            <div class="msg-preview">I'll have the rent sent via Cash App by Friday. Sorry for the delay, I can explain.</div>
+          </div>
+        </div>
+        <div class="msg-item">
+          <div class="msg-av">CM</div>
+          <div class="msg-body">
+            <div class="msg-name"><span>Caroline Moore</span><span class="msg-time">Jun 1</span></div>
+            <div class="msg-preview">June rent sent via ACH. Tracking ID TRK-2568463-CM9001-30014. Thank you!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ STRIPE & POLICIES ═══════════════════ -->
+    <div class="view" id="view-payments">
+      <div class="section-hd"><div class="section-title">Stripe & Store Policies</div><button class="topbar-btn" onclick="window.open('https://dashboard.stripe.com/settings/billing','_blank')">Open Stripe →</button></div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Section 1 · Subscriptions</div>
+        <div class="stripe-row"><div class="stripe-label">Multiple Subscriptions</div><div class="stripe-value"><span class="badge badge-navy">Disabled</span><div class="stripe-note">Only applies to new subscriptions created via Checkout or Payment Links.</div></div></div>
+        <div class="stripe-row"><div class="stripe-label">Default Billing Mode</div><div class="stripe-value"><span class="badge badge-gold">Flexible</span><div class="stripe-note">Determines subscription behavior for Payment Links and pricing tables.</div></div></div>
+        <div class="stripe-row"><div class="stripe-label">Billing Settings</div><div class="stripe-value"><a href="https://dashboard.stripe.com/settings/billing" target="_blank">dashboard.stripe.com/settings/billing →</a></div></div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Section 2 · Promotional Emails</div>
+        <div class="stripe-row"><div class="stripe-label">Promotional Email Recovery</div><div class="stripe-value"><span class="badge badge-green">Enabled</span><div class="stripe-note">Boost conversion: Sends recovery emails for abandoned Checkout sessions, new products, coupons.</div></div></div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Section 3 · Store Policies</div>
+        <div class="policy-grid">
+          <div>
+            <div class="stripe-row" style="flex-direction:column;gap:6px;align-items:flex-start;">
+              <div class="stripe-label">Refund & Return Policy</div>
+              <span class="badge badge-amber">Required</span>
+              <div class="stripe-note">All rent payments are non-refundable after transfer. Security deposits returned within 30 days of lease end, less documented deductions, per applicable state law.</div>
+            </div>
+            <div class="stripe-row">
+              <div class="stripe-label">Refund Policy URL</div>
+              <div class="stripe-value"><a href="https://vivia-property.zite.so/refunds" target="_blank">vivia-property.zite.so/refunds →</a></div>
+            </div>
+          </div>
+          <div>
+            <div class="stripe-row" style="flex-direction:column;gap:6px;align-items:flex-start;">
+              <div class="stripe-label">Custom Checkout Message</div>
+              <div class="stripe-note" style="font-size:11px;background:var(--cream);padding:10px;border-radius:6px;line-height:1.6;">By completing this payment you agree to VIVIA Property's rental terms. Security deposits and first month's rent are collected securely via Stripe. Funds are held per your lease agreement and applicable state law.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Section 4 · Legal Policies</div>
+        <div class="stripe-row"><div class="stripe-label">Terms of Service URL</div><div class="stripe-value"><a href="https://vivia-property.zite.so/terms" target="_blank">vivia-property.zite.so/terms →</a></div></div>
+        <div class="stripe-row"><div class="stripe-label">Privacy Policy URL</div><div class="stripe-value"><a href="https://vivia-property.zite.so/privacy" target="_blank">vivia-property.zite.so/privacy →</a></div></div>
+        <div class="stripe-row"><div class="stripe-label">Checkout Agreement Type</div><div class="stripe-value"><span class="badge badge-navy">Checkbox Required</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">TOS Checkbox Label</div><div class="stripe-value" style="font-style:italic;color:var(--navy);">"I agree to VIVIA Property's Terms of Service and Privacy Policy"</div></div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Section 5 · Contact Information</div>
+        <div class="stripe-row"><div class="stripe-label">Support Email</div><div class="stripe-value"><a href="mailto:lease@viviaproperty.com">lease@viviaproperty.com</a></div></div>
+        <div class="stripe-row"><div class="stripe-label">Support Phone</div><div class="stripe-value">+1 (943) 260-0871</div></div>
+        <div class="stripe-row"><div class="stripe-label">Support / Help URL</div><div class="stripe-value"><a href="https://vivia-property.zite.so/support" target="_blank">vivia-property.zite.so/support →</a></div></div>
+        <div class="stripe-row"><div class="stripe-label">Live Stripe Account</div><div class="stripe-value"><span class="trk">acct_1SunFm697drovv2I</span> <span class="badge badge-green" style="margin-left:6px;">Payments Active</span></div></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-primary" onclick="toast('Stripe policy settings saved ✓')">Save Settings</button>
+        <button class="btn-cancel" onclick="toast('Changes discarded.')">Discard</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ EMAIL / SENDGRID ═══════════════════ -->
+    <div class="view" id="view-email">
+      <div class="section-hd"><div class="section-title">Email Automation · SendGrid</div></div>
+      <div class="notice notice-green">✓ SendGrid connected · Twilio SMS also configured · Phone: +1 (844) 523-6259</div>
+
+      <div class="sg-panel">
+        <div class="sg-header">
+          <div class="sg-header-title">Send Manual Email to Tenant</div>
+          <span class="badge badge-green" style="color:#fff;background:rgba(255,255,255,.15);">SendGrid v3 API</span>
+        </div>
+        <div class="sg-body">
+          <div class="sg-row">
+            <div class="sg-group">
+              <label>From (Verified Sender)</label>
+              <input type="email" value="lease@viviaproperty.com" readonly/>
+            </div>
+            <div class="sg-group">
+              <label>To (Tenant Email)</label>
+              <input type="email" id="sgTo" placeholder="tenant@email.com"/>
+            </div>
+          </div>
+          <div class="sg-row">
+            <div class="sg-group">
+              <label>Subject</label>
+              <input type="text" id="sgSubject" placeholder="Your VIVIA rental — action required"/>
+            </div>
+            <div class="sg-group">
+              <label>Template Type</label>
+              <select id="sgTemplate">
+                <option>Rent Reminder</option>
+                <option>Late Payment Notice</option>
+                <option>Lease Ready for Signature</option>
+                <option>Maintenance Update</option>
+                <option>Move-In Confirmation</option>
+                <option>Custom Message</option>
+              </select>
+            </div>
+          </div>
+          <div class="sg-row">
+            <div class="sg-group">
+              <label>Message Body</label>
+              <textarea id="sgBody" rows="4" placeholder="Hi [Tenant Name], this is a reminder from VIVIA Property regarding your lease at [Address]…"></textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:4px;">
+            <button class="btn-primary" onclick="sendEmail()">Send via SendGrid</button>
+            <button class="btn-cancel" onclick="clearEmail()">Clear</button>
+          </div>
+          <div id="sgStatus" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">Automated Email Triggers</div>
+        <div class="stripe-row"><div class="stripe-label">Rent due reminder (3 days prior)</div><div class="stripe-value"><span class="badge badge-green">Active</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Late payment notice (day 5)</div><div class="stripe-value"><span class="badge badge-green">Active</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Lease ready for e-signature</div><div class="stripe-value"><span class="badge badge-green">Active</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Application received confirmation</div><div class="stripe-value"><span class="badge badge-green">Active</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Maintenance update to tenant</div><div class="stripe-value"><span class="badge badge-amber">Manual</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Move-in checklist delivery</div><div class="stripe-value"><span class="badge badge-amber">Manual</span></div></div>
+        <div class="stripe-row"><div class="stripe-label">Twilio SMS · Late rent alert</div><div class="stripe-value"><span class="badge badge-green">Active · +1(844)523-6259</span></div></div>
+      </div>
+
+      <div class="stripe-panel">
+        <div class="stripe-section-title">SendGrid Node.js Integration</div>
+        <pre style="background:var(--navy);color:#f9fafb;padding:16px;border-radius:8px;font-size:11px;overflow-x:auto;line-height:1.7;">const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY); // stored in .env
+
+const msg = {
+  to: 'tenant@email.com',
+  from: 'lease@viviaproperty.com', // verified sender
+  subject: 'VIVIA Property — Rent Reminder',
+  text: 'Your June rent of $1,300 is due in 3 days.',
+  html: '&lt;p&gt;Your June rent of &lt;strong&gt;$1,300&lt;/strong&gt; is due in 3 days.&lt;/p&gt;',
+};
+
+sgMail.send(msg)
+  .then(() =&gt; console.log('Email sent'))
+  .catch((error) =&gt; console.error(error));</pre>
+        <div class="notice notice-amber" style="margin-top:12px;margin-bottom:0;">⚠ API key stored in environment variable only — never hardcode in source files.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SETUP & CONFIG ═══════════════════ -->
+    <div class="view" id="view-setup">
+      <div class="section-hd"><div class="section-title">Setup & Configuration</div></div>
+
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">TurboTenant Account Connected</div><div class="setup-sub">Hash: QmFzaWNVc2VyUHJvZmlsZToxMTA2NTAy · Portal: T3duZXI6MTEwNjUwMg==</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">Stripe Live Account Active</div><div class="setup-sub">acct_1SunFm697drovv2I · Payments enabled · Webhooks configured</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">Fillout Application Form Live</div><div class="setup-sub">vivia-property.zite.so · 8 payment methods · Tracking ID generation active</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">HubSpot CRM Connected</div><div class="setup-sub">Portal 147969685 · EU region · 4 Slack channels mapped · Contacts synced</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">Shopify Draft Order Flow Active</div><div class="setup-sub">6 Flow automations · Tracking IDs → order fulfillment pipeline</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">SendGrid Email Automation</div><div class="setup-sub">lease@viviaproperty.com · v3 API · Rent reminders, lease notifications active</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">Twilio SMS Notifications</div><div class="setup-sub">+1 (844) 523-6259 · Account SID: AC6c20570d…8954ea · Late rent SMS active</div></div></div>
+      <div class="setup-item"><div class="setup-check check-done">✓</div><div style="flex:1;"><div class="setup-label">TurboTenant Property Embed</div><div class="setup-sub">embedpropertylist.html#/QmFzaWNVc2VyUHJvZmlsZToxMTQzMjE0 · Live on dashboard</div></div></div>
+      <div class="setup-item"><div class="setup-check check-todo">○</div><div style="flex:1;"><div class="setup-label">TurboTenant Autopilot</div><div class="setup-sub">Automate rent reminders, late fees, and maintenance routing</div></div><button class="btn-sm btn-sm-primary" style="flex-shrink:0;" onclick="toast('Opening Autopilot settings…')">Enable</button></div>
+      <div class="setup-item"><div class="setup-check check-todo">○</div><div style="flex:1;"><div class="setup-label">Move-In Condition Reports</div><div class="setup-sub">Set up photo checklists for all 8 properties</div></div><button class="btn-sm btn-sm-primary" style="flex-shrink:0;" onclick="toast('Opening condition report builder…')">Set Up</button></div>
+      <div class="setup-item"><div class="setup-check check-todo">○</div><div style="flex:1;"><div class="setup-label">NC Market Property</div><div class="setup-sub">Complete onboarding: add address, set rent, generate TT listing</div></div><button class="btn-sm btn-sm-primary" style="flex-shrink:0;" onclick="openModal('addPropModal')">Add Now</button></div>
+
+      <div style="margin-top:22px;">
+        <div class="section-title" style="margin-bottom:11px;">Quick Links</div>
+        <div class="qlinks">
+          <a href="https://turbotenant.com/r/T3duZXI6MTEwNjUwMg==" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">TurboTenant Dashboard</a>
+          <a href="https://vivia-property.zite.so/"  target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">VIVIA Rentals Site</a>
+          <a href="https://app.hubspot.com/contacts/147969685" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">HubSpot CRM</a>
+          <a href="https://dashboard.stripe.com" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Stripe Dashboard</a>
+          <a href="https://vivia-property.zite.so/terms" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Terms of Service</a>
+          <a href="https://vivia-property.zite.so/privacy" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Privacy Policy</a>
+          <a href="https://vivia-property.zite.so/refunds" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Refund Policy</a>
+          <a href="https://vivia-property.zite.so/support" target="_blank" class="btn-sm btn-sm-ghost" style="text-decoration:none;">Support Center</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /main -->
+
+<!-- ═══════ MODALS ═══════ -->
+<div class="modal-overlay" id="addPropModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Property</div>
+      <button class="modal-close" onclick="closeModal('addPropModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fm-row">
+        <div class="fm-group"><label>Street Address *</label><input type="text" placeholder="123 Main St"/></div>
+        <div class="fm-group"><label>Unit</label><input type="text" placeholder="Optional"/></div>
+      </div>
+      <div class="fm-row">
+        <div class="fm-group"><label>City *</label><input type="text" placeholder="Covington"/></div>
+        <div class="fm-group"><label>State *</label><select><option>GA</option><option>IL</option><option>TX</option><option>NC</option><option>FL</option><option>AZ</option><option>CA</option></select></div>
+        <div class="fm-group"><label>ZIP *</label><input type="text" maxlength="5"/></div>
+      </div>
+      <div class="fm-row">
+        <div class="fm-group"><label>Monthly Rent *</label><input type="number" placeholder="$0"/></div>
+        <div class="fm-group"><label>TurboTenant Property ID</label><input type="text" placeholder="e.g. 2568463"/></div>
+      </div>
+      <div class="fm-row">
+        <div class="fm-group"><label>Lease Type</label><select><option>12 Months</option><option>Month-to-Month</option><option>Rent-to-Own</option><option>24 Months</option></select></div>
+        <div class="fm-group"><label>Status</label><select><option>Vacant</option><option>Occupied</option><option>Coming Soon</option></select></div>
+      </div>
+      <div class="fm-actions">
+        <button class="btn-primary" onclick="toast('Property added to VIVIA portfolio ✓');closeModal('addPropModal')">Add Property</button>
+        <button class="btn-cancel" onclick="closeModal('addPropModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Invite Tenant to Apply</div>
+      <button class="modal-close" onclick="closeModal('inviteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fm-row">
+        <div class="fm-group"><label>Tenant Full Name *</label><input type="text" placeholder="Full name"/></div>
+        <div class="fm-group"><label>Email *</label><input type="email" placeholder="tenant@email.com"/></div>
+      </div>
+      <div class="fm-row">
+        <div class="fm-group"><label>Phone</label><input type="tel" placeholder="(555) 000-0000"/></div>
+        <div class="fm-group"><label>Property *</label>
+          <select>
+            <option>10115 S California Ave, Chicago IL</option>
+            <option>7505 Emerson St, Morton Grove IL</option>
+            <option>606 Cochise Cir, Bolingbrook IL</option>
+            <option>1920 Cherry Bark Ln #300, Forney TX</option>
+            <option>6103 Oakwood Cir, Covington GA</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:var(--cream);border-radius:7px;padding:11px 13px;font-size:11px;color:var(--slate);margin-bottom:13px;line-height:1.6;">
+        📧 Tenant receives an email with your Fillout application link via SendGrid:<br/>
+        <strong><a href="https://vivia-property.zite.so/" target="_blank" style="color:var(--navy-light);">vivia-property.zite.so</a></strong><br/>
+        A unique tracking ID will be generated on submission.
+      </div>
+      <div class="fm-actions">
+        <button class="btn-primary" onclick="toast('Invite sent via SendGrid ✓');closeModal('inviteModal')">Send Invite</button>
+        <button class="btn-cancel" onclick="closeModal('inviteModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TITLES = {
+  dashboard:'Dashboard',properties:'Properties',listings:'Listings',
+  applications:'Applications',screening:'Screening',leases:'Leases',
+  rent:'Rent Collection',accounting:'Accounting',maintenance:'Maintenance',
+  messages:'Messages',payments:'Stripe & Policies',email:'Email / SendGrid',setup:'Setup & Config'
+};
+
+function nav(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active');
+    });
+  }
+  document.getElementById('topbarTitle').textContent = TITLES[id] || id;
+  window.scrollTo(0, 0);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function sendEmail() {
+  const to = document.getElementById('sgTo').value;
+  const subject = document.getElementById('sgSubject').value;
+  const body = document.getElementById('sgBody').value;
+  if (!to || !subject) { document.getElementById('sgStatus').innerHTML = '<div class="sg-status warn">⚠ Please enter a recipient email and subject.</div>'; return; }
+  document.getElementById('sgStatus').innerHTML = '<div class="sg-status ok">✓ Email queued via SendGrid API · From: lease@viviaproperty.com → ' + to + '</div>';
+  toast('Email sent via SendGrid to ' + to);
+}
+
+function clearEmail() {
+  ['sgTo','sgSubject','sgBody'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('sgStatus').innerHTML = '';
+}
+</script>
+</body>
+</html>
